@@ -36,6 +36,8 @@ details summary{cursor:pointer;color:var(--muted);font-weight:600}
 .saved.off i{background:var(--faint);box-shadow:none}.saved.err i{background:var(--amber);box-shadow:0 0 8px var(--amber)}
 #refresh.spin svg{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .mt{margin:4px 0 2px}.mt td{padding:6px 4px;font-size:13px}.meal h3{font-size:14.5px}
+.btn.syncbtn{height:42px;background:linear-gradient(135deg,var(--green-2),var(--green));color:#06210f;border:0;box-shadow:0 10px 26px -10px rgba(34,197,94,.8)}
+.code{width:100%;min-height:90px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;min-height:100vh;color:var(--text);font:14px/1.5 var(--sans);background:var(--bgfx),var(--bg);background-attachment:fixed;-webkit-font-smoothing:antialiased}
@@ -181,7 +183,7 @@ html:not([data-theme=light]) .tabbar{background:rgba(10,14,11,.88)}
 .fab{bottom:calc(92px + env(safe-area-inset-bottom));right:16px;width:54px;height:54px;border-radius:18px}
 .ringrow{flex-direction:column;align-items:stretch}.ring{margin:0 auto}
 .days{grid-template-columns:repeat(5,1fr)}
-.saved span{display:none}.saved{margin-right:-4px}.iconbtn{width:38px;height:38px}.tsw span{display:none}.tsw button{padding:0 5px}
+.saved span{display:none}.tools{flex-wrap:wrap;gap:8px;width:100%}.daysw{flex:1;justify-content:space-between}.syncbtn{height:40px;padding:0 14px}.iconbtn{width:40px;height:40px}.tsw button{height:30px}.tsw i{width:22px;height:22px}.saved{margin-right:-4px}.iconbtn{width:38px;height:38px}.tsw span{display:none}.tsw button{padding:0 5px}
 .exs{grid-template-columns:1fr}
 .card{padding:16px}
 .dchip span{display:none}
@@ -564,7 +566,7 @@ function bar(p){return '<div class="bar"><i style="width:'+Math.round(Math.min(1
 function top(){var opts="";for(var i=1;i<=30;i++)opts+='<option value="'+i+'"'+(i===sel?" selected":"")+'>Day '+i+' · '+DAYN[wd(i)].slice(0,3)+'</option>';
 return '<div class="top"><div class="brand">'+LOGO+'<div><b>30-Day Fit Plan</b><small>'+(S.start?dateOf(1)+' – '+dateOf(30):"Fat loss + upper body · EC$350 a month")+'</small></div></div>'+
 '<div class="tools"><span class="saved '+(SY.err?"err":SY.mode==="device"?"off":"ok")+'" id="saved" title="'+statusTxt()+'"><i></i><span>'+statusTxt()+'</span></span><div class="daysw"><button data-step="-1" aria-label="Previous day"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button><select id="daysel" aria-label="Day">'+opts+'</select><button data-step="1" aria-label="Next day"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button></div>'+
-'<button class="iconbtn" id="refresh" title="Refresh: get your latest data" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></button><div class="tsw" role="group" aria-label="Theme">'+THEMES.map(function(t){return '<button data-theme-set="'+t+'" class="'+(theme===t?"on":"")+'" aria-pressed="'+(theme===t)+'"><i class="'+t+'"></i><span>'+TNAME[t]+'</span></button>'}).join("")+'</div></div></div>'+
+'<button class="btn syncbtn" id="syncbtn" title="Sync between devices"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg><span>Sync</span></button><button class="iconbtn" id="refresh" title="Refresh: get your latest data" aria-label="Refresh"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg></button><div class="tsw" role="group" aria-label="Theme">'+THEMES.map(function(t){return '<button data-theme-set="'+t+'" class="'+(theme===t?"on":"")+'" aria-pressed="'+(theme===t)+'"><i class="'+t+'"></i><span>'+TNAME[t]+'</span></button>'}).join("")+'</div></div></div>'+
 '<div class="nav">'+TABS.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?"on":"")+'"><svg viewBox="0 0 24 24">'+t[2]+'</svg>'+t[1]+'</button>'}).join("")+'</div>'}
 function tabbar(){return '<div class="tabbar">'+TABS.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(tab===t[0]?"on":"")+'"><svg viewBox="0 0 24 24">'+t[2]+'</svg>'+t[1]+'</button>'}).join("")+'</div><button class="fab" id="fab" aria-label="Log food"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>'}
 
@@ -659,12 +661,36 @@ Promise.allSettled([usdaSearch(q),offSearch(q)]).then(function(rs){var res=[],li
 if(rs.every(function(r){return r.status==="rejected"})){box._msg=lim?"The free USDA demo key has hit its hourly limit. Try again later, or add your own free key below.":"Online search couldn’t connect. The claude.ai link blocks outside websites, so online search works on your GitHub Pages copy. The built-in list works everywhere.";box._res=null}
 else{box._msg=lim?"USDA hourly limit reached; showing Open Food Facts only.":"";box._res=res.slice(0,8)}renderPrev(box)})}
 function addEst(box){var e=curEst(box);if(!e||e.none)return;(S.prot[sel]=S.prot[sel]||[]).push([e.label,e.prot,e.kcal]);if(prot(sel)>=PT){var h=S.habits[sel]||[];h[1]=true;S.habits[sel]=h}save();var open=!!document.getElementById("sheet");keep(render);if(open){closeSheet();sheet()}}
-function syncCard(){var o='<div class="card" style="margin-top:16px"><div class="hd"><div><h2>Sync between phone and computer</h2><p class="sub">'+esc(statusTxt())+'</p></div><span class="badge '+(SY.err?"a":SY.mode==="device"?"":"g")+'"><i></i>'+(SY.err?"Check":SY.mode==="device"?"Off":"On")+'</span></div>';
-if(SY.mode==="db")return o+'<p style="margin:0">Your ticks, logs and food entries save to your Claude account. Open this same claude.ai link on your phone and computer while signed in, and changes show up within a few seconds. Tap <b>↻</b> to pull the latest straight away.</p></div>';
-var on=!!ghTok();
-o+='<p style="margin:0 0 10px">On the claude.ai link, sync is automatic when you’re signed in. For your <b>GitHub Pages copy</b>, connect a private GitHub Gist, a hidden note in your own GitHub account. Do this once on each device:</p><ol class="clean small" style="margin-bottom:12px"><li>On github.com go to <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</b>.</li><li>Under <b>Account permissions</b>, set <b>Gists</b> to <b>Read and write</b>. Leave everything else off.</li><li>Copy the token and paste it below on your phone <i>and</i> your computer, then tap Connect.</li></ol>'+
-(on?'<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill g">Token saved on this device</span><button class="btn sm danger" id="ghoff">Disconnect</button></div>':'<div class="log" style="grid-template-columns:1fr auto"><input type="text" id="ghtok" placeholder="Paste GitHub token" autocomplete="off"><button class="btn sm pri" id="ghconnect">Connect</button></div>')+
-'<p class="small muted" style="margin:10px 0 0">The token stays in this browser only and can do nothing except read and write your gists. If both devices change the same day while offline, the most recent save wins.</p></div>';return o}
+function syncCard(){return '<div class="card" style="margin-top:16px"><div class="hd"><div><h2>Sync between phone and computer</h2><p class="sub">'+esc(statusTxt())+'</p></div><button class="btn sm pri" id="syncbtn">Open Sync</button></div><p class="small" style="margin:0">Tap <b>Sync</b> (top of the screen) on the device with your new entries, send yourself the code, then tap <b>Sync</b> on the other device and paste it. Entries from both devices are merged. Nothing gets overwritten.</p></div>'}
+function mergeS(a,b){var o=JSON.parse(JSON.stringify(a||{}));b=b||{};o=normS(o);b=normS(JSON.parse(JSON.stringify(b)));
+Object.keys(b.prot).forEach(function(d){var cur=o.prot[d]||[],seen={};cur.forEach(function(e){seen[JSON.stringify(e)]=1});b.prot[d].forEach(function(e){var k=JSON.stringify(e);if(!seen[k]){if(e[3]&&cur.some(function(x){return x[3]===e[3]}))return;cur.push(e);seen[k]=1}});o.prot[d]=cur});
+Object.keys(b.habits).forEach(function(d){var x=o.habits[d]||[],y=b.habits[d]||[];for(var i=0;i<Math.max(x.length,y.length);i++)x[i]=!!(x[i]||y[i]);o.habits[d]=x});
+Object.keys(b.logs).forEach(function(d){var x=o.logs[d]=o.logs[d]||{};Object.keys(b.logs[d]).forEach(function(k){var u=x[k]=x[k]||{},v=b.logs[d][k];if(v.x)u.x=true;["w","r"].forEach(function(f){if(v[f]&&!u[f])u[f]=v[f]})})});
+Object.keys(b.shop).forEach(function(w){var x=o.shop[w]=o.shop[w]||{};Object.keys(b.shop[w]).forEach(function(k){if(b.shop[w][k])x[k]=true})});
+Object.keys(b.meas).forEach(function(m){var x=o.meas[m]=o.meas[m]||{};Object.keys(b.meas[m]).forEach(function(f){if(b.meas[m][f]&&!x[f])x[f]=b.meas[m][f]})});
+Object.keys(b.notes).forEach(function(d){var x=o.notes[d]||"",y=b.notes[d]||"";o.notes[d]=y.length>x.length?y:x});
+if((b.updated||0)>(a&&a.updated||0)){["goal","kgoal","start"].forEach(function(k){if(b[k])o[k]=b[k]})}
+o.updated=Date.now();return o}
+function b64(u8){var s="";for(var i=0;i<u8.length;i+=8192)s+=String.fromCharCode.apply(null,u8.subarray(i,i+8192));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function unb64(t){t=t.replace(/-/g,"+").replace(/_/g,"/");while(t.length%4)t+="=";var s=atob(t),u=new Uint8Array(s.length);for(var i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u}
+function makeCode(){var json=JSON.stringify(S),enc=new TextEncoder().encode(json);
+if(window.CompressionStream){return new Response(new Blob([enc]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer().then(function(buf){return "FIT1:"+b64(new Uint8Array(buf))})}
+return Promise.resolve("FIT0:"+b64(enc))}
+function readCode(c){c=String(c||"").trim().replace(/\s+/g,"");var m=c.match(/FIT([01]):([A-Za-z0-9_-]+)/);if(!m)return Promise.reject(new Error("That doesn’t look like a sync code. Copy the whole thing, starting with FIT1:"));
+var u=unb64(m[2]);if(m[1]==="0")return Promise.resolve(JSON.parse(new TextDecoder().decode(u)));
+if(!window.DecompressionStream)return Promise.reject(new Error("This browser is too old to read the code. Update it and try again."));
+return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream("gzip"))).text().then(JSON.parse)}
+function syncSheet(){closeSheet();var m=document.createElement("div");m.className="sheet";m.id="sheet";
+m.innerHTML='<div class="card"><div class="hd"><div><h2>Sync between devices</h2><p class="sub">Works between any two copies (phone, computer, claude.ai link or home-screen app). Entries are merged, never overwritten.</p></div><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'+
+(SY.mode==="db"?'<div class="banner ok" style="margin-top:0">This copy also syncs automatically through your Claude account. <button class="btn sm" id="syncnow" style="margin-left:6px">Sync now</button></div>':'')+
+'<h2 style="font-size:14px;margin:10px 0 4px">1 · On the device that has the new entries</h2><p class="small muted" style="margin:0 0 8px">Tap Send, then message the code to yourself (WhatsApp, email or notes).</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm pri" id="mkcode">Send: copy my sync code</button>'+(navigator.share&&window.top===window?'<button class="btn sm" id="sharecode">Share…</button>':'')+'</div><textarea class="code" id="codeout" readonly placeholder="Your code appears here" style="margin-top:8px;display:none"></textarea><p class="small" id="codemsg" style="margin:6px 0 0;color:var(--green-2)"></p>'+
+'<h2 style="font-size:14px;margin:18px 0 4px">2 · On the other device</h2><p class="small muted" style="margin:0 0 8px">Paste the code and tap Receive. Do this both ways if both devices have new entries.</p><textarea class="code" id="codein" placeholder="Paste the code (starts with FIT1:)"></textarea><div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap"><button class="btn sm pri" id="usecode">Receive: merge into this device</button><span class="small" id="inmsg"></span></div></div>';
+document.body.appendChild(m)}
+function doMakeCode(share){var msg=document.getElementById("codemsg"),out=document.getElementById("codeout");makeCode().then(function(c){out.style.display="block";out.value=c;out.focus();out.select();
+if(share&&navigator.share){navigator.share({title:"30-Day Fit Plan sync code",text:c}).catch(function(){});return}
+var ok=function(){msg.textContent="Copied ✓ Now send it to yourself and paste it on your other device.";},bad=function(){msg.textContent="Select the code above and copy it (long-press, then Copy).";};
+try{navigator.clipboard.writeText(c).then(ok,bad)}catch(e){bad()}})}
+function doUseCode(){var inp=document.getElementById("codein"),msg=document.getElementById("inmsg");msg.style.color="";readCode(inp.value).then(function(r){var before=kcal(sel);S=mergeS(S,r);if(S.goal)PT=S.goal;if(S.kgoal)KG=S.kgoal;localSave();schedulePush();keep(render);msg.style.color="var(--green-2)";msg.textContent="Merged ✓ Both devices’ entries are on this one now.";inp.value=""},function(e){msg.style.color="var(--amber)";msg.textContent=e.message||"Couldn’t read that code."})}
 function sheet(){var list=S.prot[sel]||[],k=kcal(sel),p=prot(sel);var m=document.createElement("div");m.className="sheet";m.id="sheet";
 m.innerHTML='<div class="card"><div class="hd"><div><h2>Log food · Day '+sel+'</h2><p class="sub">Tap what you ate. Each tap counts protein and calories.</p></div><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'+
 '<div class="row" style="margin-top:0"><span>Calories</span><b>'+k.toLocaleString()+' / '+KG.toLocaleString()+' kcal</b></div>'+kbar(k)+'<div class="row"><span>Protein</span><b>'+p+' / '+PT+' g</b></div>'+bar(p/PT)+
@@ -694,6 +720,11 @@ if(ds.fadd!==undefined){addEst(t.closest(".smart"));return}
 if(ds.alt){var bx=t.closest(".smart");bx.dataset.force=ds.alt;bx._online=null;renderPrev(bx);return}
 if(ds.online!==undefined){goOnline(t.closest(".smart"));return}
 if(ds.on){var bx2=t.closest(".smart");bx2._online=bx2._res[+ds.on];renderPrev(bx2);return}
+if(t.id==="syncbtn"){syncSheet();return}
+if(t.id==="mkcode"){doMakeCode(false);return}
+if(t.id==="sharecode"){doMakeCode(true);return}
+if(t.id==="usecode"){doUseCode();return}
+if(t.id==="syncnow"){t.textContent="Syncing…";pullNow().then(function(){push();t.textContent="Synced ✓"},function(){t.textContent="Couldn’t reach it"});return}
 if(t.id==="refresh"){t.classList.add("spin");var fin=function(){if(window.top===window){try{sessionStorage.setItem("fit30scroll",scrollY)}catch(x){}location.reload()}else{keep(render)}};
 var go2=function(){pullNow().then(fin,fin)};if(SY.ptimer&&(SY.mode==="db"||SY.mode==="gh")){clearTimeout(SY.ptimer);SY.ptimer=null;push();setTimeout(go2,900)}else go2();return}
 if(t.id==="ghconnect"){var tv=(document.getElementById("ghtok").value||"").trim();if(!tv)return;try{localStorage.setItem("fit30gh",tv);localStorage.removeItem("fit30gid")}catch(x){}t.textContent="Connecting…";ghStart();return}
