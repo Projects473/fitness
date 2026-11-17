@@ -60,6 +60,7 @@ details summary{cursor:pointer;color:var(--muted);font-weight:600}
 .tcar .trk button{flex:0 0 auto;scroll-snap-align:center;height:36px;padding:0 14px;border-radius:999px;background:var(--panel-2);border:1px solid var(--border);font-weight:600;font-size:13px;color:var(--muted);white-space:nowrap}
 .tcar .trk button.on{background:linear-gradient(135deg,var(--green-2),var(--green));color:#06210f;border-color:transparent}.cmit input{padding:8px 9px;font-size:13px}.cmit input.unk{border-color:rgba(245,158,11,.7)}
 .cmit button{height:30px;color:var(--muted)}.cmit button:hover{color:var(--red)}
+ .cmalts{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 2px 2px}.cmalts .pill{cursor:pointer;border:1px solid var(--border)}
  .cmit .cmsrc{grid-column:1/-1;font-size:11.5px;color:var(--muted);margin:-2px 2px 2px}
 .cmlook{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;border-radius:14px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.35);font-size:12.5px}
 .cmres{display:grid;gap:6px;margin-top:8px}.cmres h4{margin:6px 2px 0;font-size:12.5px;color:var(--muted);font-weight:600}
@@ -390,22 +391,40 @@ var PQ=[["Protein shake, 1 scoop",24,120],["Chicken, small palm (~85 g)",25,180]
 var KG=1950;
 /* FOOD ESTIMATOR — values per 100 g (typical, USDA-style averages); units = grams per unit, first unit is the default */
 var FOODS=[
+["Water","water plain bottled",0,0,"glass:250,bottle:500,cup:240"],
+["Fried rice","fried rice chinese",174,5,"cup:160,plate:300,box:350"],
+["Callaloo soup","callaloo soup",60,2.5,"bowl:300,cup:245"],
+["Jerk chicken","jerk chicken",220,27,"piece:150,palm:85,plate:200"],
+["BBQ / grilled chicken","bbq barbecue grilled chicken",230,25,"piece:150,palm:85"],
+["Curry goat / mutton","goat mutton curry curried lamb",200,22,"palm:85,cup:200,plate:250"],
+["Lambie / conch (stewed)","lambie conch stewed",130,24,"cup:150,palm:85"],
+["Shrimp (cooked)","shrimp prawn prawns",99,24,"palm:85,cup:145,piece:6"],
+["Lobster (cooked)","lobster crayfish",89,19,"palm:85,piece:150"],
+["Bacon (cooked)","bacon",541,37,"slice:8"],
+["Ham (sliced)","ham",145,21,"slice:28,palm:85"],
+["Chocolate milk","chocolate milk",83,3.2,"glass:250,box:250,cup:240"],
+["Potato salad","potato salad",143,2.7,"cup:250,spoon:60"],
+["Split peas (cooked)","split peas",118,8.3,"cup:196"],
+["Cornmeal porridge","cornmeal porridge",110,3,"cup:240,bowl:300"],
+["Oat porridge (with milk)","porridge oat oats milk",100,4,"cup:240,bowl:300"],
+["Soursop","soursop",66,1,"cup:225"],
+["Green fig (boiled green banana)","green fig banana boiled",100,1.2,"piece:100,cup:150"],
 ["Egg (boiled / fried / scrambled)","egg boiled fried scrambled omelette omelet",155,13,"piece:50,large:56,medium:44,small:38"],
 ["Banana / fig","banana fig ripe",89,1.1,"piece:118,medium:118,small:100,large:136"],
-["Yoghurt","yoghurt yogurt",80,4.5,"cup:245,pack:150,tbsp:15"],
-["Greek yoghurt","greek yoghurt yogurt",97,9,"cup:245,pack:150,tbsp:15"],
+["Yoghurt","yoghurt yogurt",80,4.5,"pack:150,cup:245,tbsp:15"],
+["Greek yoghurt","greek yoghurt yogurt",97,9,"pack:150,cup:245,tbsp:15"],
 ["Callaloo (cooked)","callaloo dasheen bush spinach",30,2.5,"cup:180"],
 ["Pumpkin (cooked)","pumpkin squash",26,1,"cup:245,slice:100"],
 ["Eggplant / melongene (cooked)","eggplant melongene baigan choka",35,0.8,"cup:100"],
 ["Avocado / zaboca","avocado zaboca pear",160,2,"half:100,slice:30,cup:150,piece:200"],
-["Cheese slice (processed)","cheese slice processed kraft",310,18,"slice:21"],
+["Cheese slice (processed)","cheese slice processed kraft",366,18,"slice:21"],
 ["Toast with butter","toast butter",330,8,"slice:35"],
 ["Bun / sweet bun","bun",300,8,"piece:70"],
 ["Spaghetti / noodles (cooked)","spaghetti noodle noodles",158,5.8,"cup:140,plate:250"],
-["Ramen / instant noodles (cooked)","ramen instant noodles maggi",190,4,"pack:280,cup:230"],
+["Ramen / instant noodles (cooked)","ramen instant noodles maggi",125,2.8,"pack:280,cup:230"],
 ["Sandwich (bread + chicken/cheese)","sandwich",250,12,"piece:180"],
 ["Smoothie (fruit)","smoothie",60,1,"cup:240,glass:300"],
-["Granola / cereal","granola cereal",450,10,"cup:110,bowl:60"],
+["Granola","granola muesli",450,10,"cup:110,bowl:60"],
 ["Whole-wheat bread","bread wheat brown wholewheat toast",247,13,"slice:32,loaf:600"],
 ["White bread","bread white hops sliced toast",265,9,"slice:28,loaf:600"],
 ["Hops bread","hops roll bun",280,9,"piece:60"],
@@ -414,7 +433,7 @@ var FOODS=[
 ["Roti skin (dhalpuri)","roti dhalpuri buss up shut paratha",300,9,"piece:120"],
 ["Chicken roti","roti chicken curry wrap",210,11,"piece:450"],
 ["Dumpling (boiled)","dumpling dumplings flour",230,6,"piece:50"],
-["Doubles","doubles bara channa",230,7,"piece:120"],
+["Doubles","doubles bara channa",230,7,"piece:140"],
 ["Pholourie","pholourie",290,6,"piece:15"],
 ["Macaroni pie","macaroni pie pasta bake mac cheese",230,9,"slice:150,piece:150,cup:200"],
 ["Pasta / macaroni (cooked)","pasta macaroni spaghetti noodles",158,5.8,"cup:140,plate:250"],
@@ -431,14 +450,14 @@ var FOODS=[
 ["Dasheen (boiled)","dasheen taro provision provisions",142,0.5,"piece:100,cup:132,fist:130"],
 ["Yam (boiled)","yam provision provisions",116,1.5,"piece:100,cup:136,fist:130,slice:60"],
 ["Breadfruit (boiled / roasted)","breadfruit",103,1.1,"slice:100,cup:220,piece:100"],
-["Cassava / manioc (boiled)","cassava manioc yuca",160,1.4,"cup:206,piece:100"],
-["Plantain (boiled)","plantain boiled",122,1.3,"piece:90,slice:30"],
-["Plantain (fried)","plantain fried ripe",236,1.5,"slice:30,piece:90"],
+["Cassava / manioc (boiled)","cassava manioc yuca",130,0.5,"cup:206,piece:100"],
+["Plantain (boiled)","plantain boiled",116,0.8,"piece:180,medium:180,slice:30"],
+["Plantain (fried)","plantain fried ripe",236,1.5,"slice:30,piece:180"],
 ["Potato (boiled)","potato irish",87,1.9,"medium:150,cup:156"],
 ["French fries","fries chips french",312,3.4,"small:71,medium:117,large:154,pack:117"],
 ["Corn on the cob","corn cob sweetcorn",96,3.4,"piece:100,cup:150"],
 ["Chicken breast (cooked)","chicken breast grilled baked",165,31,"piece:170,palm:85,cup:140"],
-["Chicken thigh (cooked, no skin)","chicken thigh thighs",209,26,"piece:100,palm:85"],
+["Chicken thigh (cooked, no skin)","chicken thigh thighs",209,26,"piece:80,palm:85"],
 ["Chicken drumstick (cooked)","chicken drumstick leg drumsticks",172,28,"piece:75,palm:85"],
 ["Chicken, stewed / curry (with skin)","chicken stew stewed curry baked bbq barbecue",215,27,"palm:85,piece:100,cup:140"],
 ["Fried chicken","chicken fried kfc",290,24,"piece:120"],
@@ -450,7 +469,7 @@ var FOODS=[
 ["Tuna, canned in oil","tuna can canned oil",198,29,"can:120,cup:150,tbsp:15"],
 ["Sardines in oil","sardines sardine",208,25,"can:92,piece:12"],
 ["Mackerel, canned","mackerel can canned",156,21,"can:155"],
-["Corned beef","corned beef bully",250,27,"can:340,tbsp:20,cup:150"],
+["Corned beef","corned beef bully",250,27,"palm:85,can:340,tbsp:20,cup:150"],
 ["Beef, stewed","beef stew stewed",250,26,"palm:85,cup:140"],
 ["Pork, cooked","pork",240,27,"palm:85,piece:100"],
 ["Hot dog / sausage","hot dog sausage frank",290,11,"piece:50"],
@@ -508,7 +527,7 @@ var FOODS=[
 ["Coconut milk","coconut milk",230,2.3,"cup:240,tbsp:15"],
 ["Mayonnaise","mayonnaise mayo",680,1,"tbsp:14"],
 ["Ketchup","ketchup sauce",112,1.7,"tbsp:17"],
-["Chips / cheese curls","chips crisps cheese curls snacks",536,7,"pack:28,small:28"],
+["Chips / cheese curls","cheese curls crisps lays snack packet",536,7,"pack:28,small:28"],
 ["Biscuits / cookies","biscuit cookie cookies",480,6,"piece:12,pack:60"],
 ["Chocolate bar","chocolate bar candy",535,7.7,"piece:45"],
 ["Ice cream","ice cream",207,3.5,"scoop:66,cup:132"],
@@ -520,7 +539,7 @@ var UNITW={g:["g","gram","grams","gm","gms"],kg:["kg","kilo","kilos"],oz:["oz","
 var UNITMAP={};for(var uk in UNITW)UNITW[uk].forEach(function(w){UNITMAP[w]=uk});
 var GENERIC={g:1,kg:1000,oz:28.35,lb:453.6,ml:1,l:1000};
 var GENVOL={cup:240,tbsp:15,tsp:5,glass:250,bowl:300,plate:350,handful:30,spoon:40,scoop:30,shot:44,bottle:330,can:330,palm:85,fist:130,piece:100,slice:30,pack:30,box:200,fillet:150,loaf:600,half:100};
-var DEFN={protein:"Protein shake (whey powder)",shake:"Protein shake (whey powder)",whey:"Protein shake (whey powder)",bread:"Whole-wheat bread",rice:"White rice (cooked)",chicken:"Chicken, stewed / curry (with skin)",tuna:"Tuna, canned in water",lentil:"Lentils (cooked)",bean:"Red kidney beans (cooked)",fish:"Fish (cooked)",roti:"Roti skin (dhalpuri)",bake:"Bake (coconut / roast bake)",milk:"Milk, whole",oat:"Oats (dry)",oats:"Oats (dry)",juice:"Sweetened juice / punch",potato:"Potato (boiled)",provision:"Sweet potato (boiled)",soup:"Vegetable soup",pea:"Pigeon peas (cooked)",cheese:"Cheddar cheese",oil:"Cooking oil",peanut:"Peanuts",beef:"Beef, stewed",plantain:"Plantain (boiled)",pasta:"Pasta / macaroni (cooked)",macaroni:"Pasta / macaroni (cooked)",tea:"Coffee / tea (black)",coffee:"Coffee / tea (black)",beer:"Beer / lager",carib:"Beer / lager",drink:"Soft drink / soda",soda:"Soft drink / soda",coke:"Soft drink / soda"};
+var DEFN={cereal:"Cornflakes",chip:"French fries",chips:"French fries",porridge:"Oat porridge (with milk)",water:"Water",fig:"Banana / fig",goat:"Curry goat / mutton",mutton:"Curry goat / mutton",protein:"Protein shake (whey powder)",shake:"Protein shake (whey powder)",whey:"Protein shake (whey powder)",bread:"Whole-wheat bread",rice:"White rice (cooked)",chicken:"Chicken, stewed / curry (with skin)",tuna:"Tuna, canned in water",lentil:"Lentils (cooked)",bean:"Red kidney beans (cooked)",fish:"Fish (cooked)",roti:"Roti skin (dhalpuri)",bake:"Bake (coconut / roast bake)",milk:"Milk, whole",oat:"Oats (dry)",oats:"Oats (dry)",juice:"Sweetened juice / punch",potato:"Potato (boiled)",provision:"Sweet potato (boiled)",soup:"Vegetable soup",pea:"Pigeon peas (cooked)",cheese:"Cheddar cheese",oil:"Cooking oil",peanut:"Peanuts",beef:"Beef, stewed",plantain:"Plantain (boiled)",pasta:"Pasta / macaroni (cooked)",macaroni:"Pasta / macaroni (cooked)",tea:"Coffee / tea (black)",coffee:"Coffee / tea (black)",beer:"Beer / lager",carib:"Beer / lager",drink:"Soft drink / soda",soda:"Soft drink / soda",coke:"Soft drink / soda"};
 var NUMW={a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,half:0.5,quarter:0.25,couple:2,few:3};
 var STOP={of:1,the:1,some:1,my:1,x:1,with:1,and:1,"&":1,serving:1,servings:1,portion:1,portions:1,ate:1,had:1,i:1};
 function stem(w){return w.length>3&&/s$/.test(w)&&!/ss$/.test(w)?w.replace(/(es|s)$/,function(m){return w.length>4&&/(ch|sh|x|o)es$/.test(w)?"":m==="es"?"e":""}):w}
@@ -704,9 +723,15 @@ if(box._res){h+=box._res.length?'<div class="onres"><p class="small muted" style
 if(box._msg)h+='<p class="small" style="color:var(--amber);margin:8px 2px 0">'+box._msg+'</p>';
 if(e||box._res||box._msg)out.innerHTML=h}
 function usdaSearch(q){var key="DEMO_KEY";try{key=localStorage.getItem("fit30fdc")||"DEMO_KEY"}catch(e){}
-return fetch("https://api.nal.usda.gov/fdc/v1/foods/search?api_key="+encodeURIComponent(key)+"&query="+encodeURIComponent(q)+"&pageSize=6&dataType="+encodeURIComponent("Survey (FNDDS),SR Legacy,Foundation")).then(function(r){if(r.status===429)throw new Error("limit");if(!r.ok)throw new Error("usda");return r.json()}).then(function(j){return(j.foods||[]).map(function(f){var fn=f.foodNutrients||[];function n(num,id){var x=fn.filter(function(z){return String(z.nutrientNumber)===num||z.nutrientId===id})[0];return x?x.value:null}
+return fetch("https://api.nal.usda.gov/fdc/v1/foods/search?api_key="+encodeURIComponent(key)+"&query="+encodeURIComponent(q)+"&pageSize=25").then(function(r){if(r.status===429)throw new Error("limit");if(!r.ok)throw new Error("usda");return r.json()}).then(function(j){var ql=String(q).toLowerCase();
+return(j.foods||[]).map(function(f,ix){var fn=f.foodNutrients||[];function n(num,id){var x=fn.filter(function(z){return String(z.nutrientNumber)===num||z.nutrientId===id})[0];return x?x.value:null}
 var k=n("208",1008);if(k==null){var kj=n("268",1062);if(kj!=null)k=kj/4.184}
-return{name:(f.description||"").replace(/\b\w/,function(c){return c.toUpperCase()}),k:k,p:n("203",1003),m:(f.foodMeasures||[]).map(function(m){return{t:String(m.disseminationText||m.measureUnitName||"").toLowerCase(),g:m.gramWeight}}).filter(function(m){return m.g}),src:"USDA"}}).filter(function(x){return x.k!=null})})}
+var ms=(f.foodMeasures||[]).map(function(m){return{t:String(m.disseminationText||m.measureUnitName||"").toLowerCase(),g:m.gramWeight}}).filter(function(m){return m.g&&!/cubic inch/.test(m.t)});
+if(f.dataType==="Branded"&&f.servingSize&&/^(g|grm|ml|mlt)$/i.test(String(f.servingSizeUnit||"")))ms.unshift({t:"serving "+f.servingSize+" g",g:+f.servingSize});
+ms.sort(function(a,b){return(/quantity not specified/.test(b.t)?1:0)-(/quantity not specified/.test(a.t)?1:0)});
+var nm=(f.description||"").toLowerCase().replace(/\b\w/,function(c){return c.toUpperCase()})+(f.dataType==="Branded"&&f.brandOwner?" ("+f.brandOwner+")":"");
+var dl=String(f.description||"").toLowerCase(),pen=0;["nectar","juice","drink","baby","infant","formula","powder","dry mix","dehydrated","candied","canned"].forEach(function(w){if(dl.indexOf(w)>=0&&ql.indexOf(w)<0)pen+=5});if(f.dataType==="Branded")pen+=20;
+return{name:nm,k:k,p:n("203",1003),m:ms,src:"USDA",sc:ix+pen}}).filter(function(x){return x.k!=null}).sort(function(a,b){return a.sc-b.sc})})}
 function offSearch(q){return fetch("https://world.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=6&fields=product_name,brands,nutriments,serving_quantity,serving_size").then(function(r){if(!r.ok)throw new Error("off");return r.json()}).then(function(j){return(j.products||[]).map(function(p){var nu=p.nutriments||{};return{name:(p.product_name||"Product")+(p.brands?" ("+String(p.brands).split(",")[0]+")":""),k:nu["energy-kcal_100g"]!=null?+nu["energy-kcal_100g"]:(nu["energy_100g"]!=null?nu["energy_100g"]/4.184:null),p:+(nu.proteins_100g||0),m:p.serving_quantity?[{t:"serving "+(p.serving_size||""),g:+p.serving_quantity}]:[],src:"Open Food Facts"}}).filter(function(x){return x.k!=null&&x.name})})}
 function goOnline(box){var p=parseFood(box.querySelector(".fq").value);if(!p||!p.words.length){box._msg="Type a food first.";renderPrev(box);return}
 var q=p.words.join(" ");box._msg="Searching USDA and Open Food Facts…";box._res=null;renderPrev(box);
@@ -773,8 +798,8 @@ m.innerHTML='<div class="card cmf"><div class="hd" style="flex-wrap:nowrap;margi
 '<div class="cmseg"><button data-cmmode="items"'+(CM.mode==="items"?' class="on"':'')+'>List the items</button><button data-cmmode="quick"'+(CM.mode==="quick"?' class="on"':'')+'>Just the totals</button></div>'+
 '<label class="l">Meal name</label><input type="text" id="cmN" placeholder="e.g. Bake and saltfish" value="'+esc(src?src.title:"")+'">'+
 '<label class="l">Time · swipe and tap</label><div class="tcar"><div class="trk" id="cmTrk">'+cmTimes(CM.time).map(function(t){return '<button data-cmtime="'+esc(t)+'"'+(t===CM.time?' class="on"':'')+'>'+esc(t)+'</button>'}).join("")+'</div></div>'+
-'<div id="cmIB"'+(CM.mode==="items"?'':' style="display:none"')+'><label class="l">What’s in it</label><div class="cmits" id="cmIts">'+(src&&src.mode!=="quick"&&src.items&&src.items.length?src.items:[{},{}]).map(cmItemRow).join("")+'</div><button class="btn sm" data-cmaddrow="1" style="margin-top:8px">+ Add item</button><div id="cmLook"></div><div class="cmres" id="cmRes"></div><p class="small muted" style="margin:8px 0 0">Type the food, then set the amount and unit (e.g. rice · 1 · cup, or saltfish · 100 · g). Leave the amount empty for one normal portion. Calories and protein fill in automatically. If a food isn’t in the list, the box turns amber and a <b>Look up online</b> button appears. You can always type the numbers yourself.</p></div>'+
-'<div id="cmQB"'+(CM.mode==="quick"?'':' style="display:none"')+'><div class="cm2"><div><label class="l">Calories (kcal)</label><input type="text" inputmode="decimal" id="cmQK" placeholder="e.g. 650" value="'+(src&&src.mode==="quick"?src.kcal:"")+'"></div><div><label class="l">Protein (g)</label><input type="text" inputmode="decimal" id="cmQP" placeholder="e.g. 30" value="'+(src&&src.mode==="quick"?src.prot:"")+'"></div></div><p class="small muted" style="margin:8px 0 0">Good for eating out when you don’t know the breakdown. Use the label or your best guess, or look it up from the meal name.</p><button class="btn sm" data-cmlookq="1" style="margin-top:8px">🔎 Estimate online from the meal name</button><p class="small" id="cmQMsg" style="margin:6px 0 0"></p></div>'+
+'<div id="cmIB"'+(CM.mode==="items"?'':' style="display:none"')+'><label class="l">What’s in it</label><div class="cmits" id="cmIts">'+(src&&src.mode!=="quick"&&src.items&&src.items.length?src.items:[{},{}]).map(cmItemRow).join("")+'</div><button class="btn sm" data-cmaddrow="1" style="margin-top:8px">+ Add item</button><div id="cmLook"></div><div class="cmres" id="cmRes"></div><p class="small muted" style="margin:8px 0 0">Type the food, then set the amount and unit (e.g. rice · 1 · cup, or saltfish · 100 · g). Leave the amount empty for one normal portion. Calories and protein fill in automatically. If a food isn’t in the app’s list, it’s looked up in the USDA database automatically. You can always type the numbers yourself.</p></div>'+
+'<div id="cmQB"'+(CM.mode==="quick"?'':' style="display:none"')+'><div class="cm2"><div><label class="l">Calories (kcal)</label><input type="text" inputmode="decimal" id="cmQK" placeholder="e.g. 650" value="'+(src&&src.mode==="quick"?src.kcal:"")+'"></div><div><label class="l">Protein (g)</label><input type="text" inputmode="decimal" id="cmQP" placeholder="e.g. 30" value="'+(src&&src.mode==="quick"?src.prot:"")+'"></div></div><p class="small muted" style="margin:8px 0 0">Good for eating out when you don’t know the breakdown. Use the label or your best guess, or look it up from the meal name.</p><button class="btn sm" data-cmlookq="1" style="margin-top:8px">🔎 Look up the meal name</button><p class="small" id="cmQMsg" style="margin:6px 0 0"></p></div>'+
 '<div class="est"><div><b id="cmEK">0 kcal</b><span id="cmEP">0 g protein</span></div><span id="cmCmp" class="small muted" style="text-align:right"></span></div>'+
 '<div style="display:grid;gap:10px;margin-top:12px"><label class="ck"><input type="checkbox" id="cmSave"'+(src?'':' checked')+'>Save to My Meals so I can reuse it</label><label class="ck"><input type="checkbox" id="cmEat"'+((src?mealEaten(sel,ctx.k):true)?' checked':'')+'>Mark as eaten</label></div>'+
 '<p class="small" id="cmMsg" style="color:var(--amber);margin:8px 0 0"></p><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn" data-close>Cancel</button><button class="btn pri" data-cmsave="1">Save meal</button></div></div>';
@@ -797,19 +822,30 @@ function cmSrc(r,t){var sp=r.querySelector(".cmsrc");if(!t){if(sp)sp.remove();re
 function cmBasis(r,k,p,src){var q=qtyNum(r.querySelector(".cmA").value),u=r.querySelector(".cmU").value;r.dataset.bk=k;r.dataset.bp=p;r.dataset.bq=q;r.dataset.bu=u;r.dataset.bs=src}
 function cmNoBasis(r){["bk","bp","bq","bu","bs"].forEach(function(k){delete r.dataset[k]})}
 function cmRatio(r,q,u){var bq=+r.dataset.bq||1,bu=r.dataset.bu||"";if(u===bu)return q/bq;var g1=uGrams(bq,bu),g2=uGrams(q,u);return g1&&g2?g2/g1:null}
+var USDA_OFF=false;
+function cmAlts(r,html){var a=r.querySelector(".cmalts");if(!html){if(a)a.remove();return}if(!a){a=document.createElement("div");a.className="cmalts";r.appendChild(a)}a.innerHTML=html}
+function cmUseUsda(r,idx){var it=r._list[idx],pp=parseFood(cmRowText(r))||{q:1,unit:null},gg=itemGrams(it,pp),k=it.k*gg.g/100,pr=(it.p||0)*gg.g/100;r._it=it;
+cmFill(r,k,pr,"USDA: "+it.name+" · "+Math.round(gg.g)+" g"+(gg.u==="g100"?" (USDA lists no serving size, so 100 g each; use grams for accuracy)":"")+" at "+Math.round(it.k)+" kcal & "+(Math.round((it.p||0)*10)/10)+" g protein per 100 g");
+cmAlts(r,r._list.length>1?'<span class="small muted">Not right?</span>'+r._list.map(function(x,i){return i===idx?'':'<button class="pill" data-cmalt="'+i+'">'+esc(x.name.length>38?x.name.slice(0,36)+"…":x.name)+'</button>'}).join(""):'')}
+function cmAuto(r){var txt=cmRowText(r);if(!txt||cmEst(txt)||r.hasAttribute("data-man"))return;
+if(USDA_OFF){cmSrc(r,"Not in the food list. USDA can’t be reached from the claude.ai link"+(SMP?", so use “Estimate with Claude” below or type the numbers.":". Type the numbers yourself."));cmLookBar();return}
+var pp=parseFood(txt);if(!pp||!pp.words.length)return;r._q=txt;cmSrc(r,"Searching the USDA database…");
+usdaSearch(pp.words.join(" ")).then(function(list){if(r._q!==cmRowText(r))return;list=list.slice(0,5);if(!list.length){cmSrc(r,"No USDA match. Try simpler words (e.g. “goat” not “mom’s goat stew”) or type the numbers.");return}r._list=list;cmUseUsda(r,0)},
+function(e){if(r._q!==cmRowText(r))return;if(String(e&&e.message)==="limit"){cmSrc(r,"The free USDA lookup limit is used up for this hour. Add your own free key under Calorie checker, or type the numbers.")}else{USDA_OFF=true;cmAuto(r)}})}
 function cmRowInput(r,which){var T=r.querySelector(".cmT"),K=r.querySelector(".cmK"),P=r.querySelector(".cmP"),full=cmRowText(r),q=qtyNum(r.querySelector(".cmA").value),u=r.querySelector(".cmU").value;
-if(which==="n"){r.setAttribute("data-man","1");T.classList.remove("unk");cmBasis(r,parseFloat(K.value)||0,parseFloat(P.value)||0,"Your numbers for "+amtTxt(q,u));cmSrc(r,"Your numbers for "+amtTxt(q,u)+" · they rescale if you change the amount");cmCalc();cmLookBar();return}
-if(which==="t"){cmNoBasis(r);r.removeAttribute("data-man")}
+if(which==="n"){r._it=null;cmAlts(r,null);r.setAttribute("data-man","1");T.classList.remove("unk");cmBasis(r,parseFloat(K.value)||0,parseFloat(P.value)||0,"Your numbers for "+amtTxt(q,u));cmSrc(r,"Your numbers for "+amtTxt(q,u)+" · they rescale if you change the amount");cmCalc();cmLookBar();return}
+if(which==="t"){cmNoBasis(r);r.removeAttribute("data-man");r._it=null;r._list=null;cmAlts(r,null)}
 var e=full?cmEst(full):null;
 if(e){K.value=e.kcal;P.value=e.prot;T.classList.remove("unk");r.removeAttribute("data-man");cmNoBasis(r);cmSrc(r,e.info)}
+else if(which==="a"&&r._it){cmUseUsda(r,r._list.indexOf(r._it))}
 else if(which==="a"&&r.dataset.bk!=null){var ra=cmRatio(r,q,u);if(ra==null){T.classList.add("unk");cmSrc(r,"Can’t convert "+amtTxt(+r.dataset.bq,r.dataset.bu)+" to "+amtTxt(q,u)+". Look it up again or type the numbers.")}else{T.classList.remove("unk");K.value=Math.round(+r.dataset.bk*ra);P.value=Math.round(+r.dataset.bp*ra*10)/10;cmSrc(r,r.dataset.bs+(ra!==1?" · scaled to "+amtTxt(q,u):""))}}
-else{T.classList.toggle("unk",!!full);if(!r.hasAttribute("data-man")){K.value="";P.value=""}cmSrc(r,null)}
+else{T.classList.toggle("unk",!!full);if(!r.hasAttribute("data-man")){K.value="";P.value=""}cmSrc(r,null);clearTimeout(r._t);if(full)r._t=setTimeout(function(){cmAuto(r)},800)}
 cmCalc();cmLookBar()}
 var SMP=null;try{if(window.claude&&claude.use)claude.use("sample").then(function(x){SMP=x||null}).catch(function(){})}catch(e){}
 function cmUnknown(){return[].filter.call(document.querySelectorAll("#cmIts .cmit"),function(r){var t=cmRowText(r);return t&&!r.hasAttribute("data-man")&&r.dataset.bk==null&&!cmEst(t)})}
-function cmLookBar(){var el=document.getElementById("cmLook");if(!el)return;var n=cmUnknown().length;el.innerHTML=n?'<div class="cmlook"><span>'+n+(n>1?' items aren’t':' item isn’t')+' in the food list.</span><button class="btn sm pri" data-cmlook="1">🔎 Look up online</button></div>':''}
+function cmLookBar(){var el=document.getElementById("cmLook");if(!el)return;var n=USDA_OFF&&SMP?cmUnknown().length:0;el.innerHTML=n?'<div class="cmlook"><span>'+n+(n>1?' items aren’t':' item isn’t')+' in the food list.</span><button class="btn sm pri" data-cmlook="1">Estimate with Claude</button></div>':''}
 function cmFill(r,k,p,src){r.querySelector(".cmK").value=Math.round(k);r.querySelector(".cmP").value=Math.round(p*10)/10;r.setAttribute("data-man","1");r.querySelector(".cmT").classList.remove("unk");cmBasis(r,k,p,src);cmSrc(r,src);cmCalc();cmLookBar()}
-function askClaude(lines){return SMP.json('You estimate nutrition for a food tracker used in Grenada (Caribbean). For each numbered line, estimate total calories (kcal) and protein (g) for the amount written. If no amount is given, assume one normal single portion as served in Grenada. Use typical values for local dishes and fast-food chains where named. Reply with JSON only: an array of objects {"i":number,"kcal":number,"protein":number,"basis":"short description of the portion assumed, max 8 words"}, one per line, in the same order.\n\n'+lines.map(function(t,i){return(i+1)+". "+t}).join("\n"),{modelTier:"quick"})}
+function askClaude(lines){return SMP.json('You estimate nutrition for a food tracker used in Grenada (Caribbean). For each numbered line, estimate total calories (kcal) and protein (g) for exactly the amount written. Work it out from the weight: first decide the cooked weight in grams of that amount (if no amount is given, one normal single portion as served in Grenada), then apply per-100 g values from USDA FoodData Central or another standard food composition table. For mixed local dishes, add up the typical ingredients. For named chains (KFC, Chefette, Subway and so on), use the chain’s published nutrition. Be realistic, not generous or stingy. Reply with JSON only: an array of objects {"i":number,"kcal":number,"protein":number,"basis":"portion and grams assumed, e.g. 1 bowl ≈ 300 g, max 8 words"}, one per line, in the same order.\n\n'+lines.map(function(t,i){return(i+1)+". "+t}).join("\n"),{modelTier:"quick"})}
 function cmLook(){var rows=cmUnknown(),el=document.getElementById("cmLook"),res=document.getElementById("cmRes");if(!rows.length)return;
 if(SMP){el.innerHTML='<div class="cmlook"><span>Asking Claude for estimates…</span></div>';askClaude(rows.map(cmRowText)).then(function(a){(Array.isArray(a)?a:[]).forEach(function(x,j){var r=rows[(+x.i||j+1)-1];if(r&&x.kcal!=null)cmFill(r,+x.kcal||0,+x.protein||0,"Claude estimate · "+(x.basis||"typical portion"))});cmLookBar()},function(e){el.innerHTML='<div class="cmlook"><span>'+(e&&e.code==="rate_limited"?"Too many lookups just now. Try again in a minute, or type the numbers.":"Couldn’t get an estimate. Type the numbers yourself.")+'</span></div>'});return}
 el.innerHTML='<div class="cmlook"><span>Searching USDA and Open Food Facts…</span></div>';res.innerHTML="";var done=0,any=false,lim=false;
@@ -819,8 +855,8 @@ if(list.length){any=true;r._opts=list.map(function(it){var gg=itemGrams(it,pp);r
 var box=document.createElement("div");box.innerHTML='<h4>For “'+esc(txt)+'” — tap the closest match:</h4>'+r._opts.map(function(o,oi){return '<button class="onr" data-cmopt="'+oi+'"><span>'+esc(o.name)+'</span><em>'+Math.round(o.kcal)+' kcal · '+Math.round(o.prot*10)/10+' g · ~'+o.g+' g</em></button>'}).join("");box._row=r;res.appendChild(box)}
 if(done===rows.length){el.innerHTML=any?'':'<div class="cmlook"><span>'+(lim?"The free USDA lookup limit is used up for this hour.":"Online search couldn’t connect from here.")+' Type the numbers yourself.</span></div>'}})})}
 function cmLookQ(){var name=(document.getElementById("cmN").value||"").trim(),msg=document.getElementById("cmQMsg");if(!name){msg.textContent="Type the meal name first.";return}
-if(SMP){msg.textContent="Asking Claude…";askClaude([name]).then(function(a){var x=Array.isArray(a)&&a[0];if(!x){msg.textContent="Couldn’t get an estimate.";return}document.getElementById("cmQK").value=Math.round(+x.kcal||0);document.getElementById("cmQP").value=Math.round(+x.protein||0);msg.textContent="Claude estimate · "+(x.basis||"typical portion")+". Adjust if needed.";cmCalc()},function(){msg.textContent="Couldn’t get an estimate. Type the numbers yourself."});return}
-var pp=parseFood(name);msg.textContent="Searching…";Promise.allSettled([usdaSearch(pp.words.join(" ")),offSearch(pp.words.join(" "))]).then(function(rs){var list=[];rs.forEach(function(x){if(x.status==="fulfilled")list=list.concat(x.value)});var it=list[0];if(!it){msg.textContent="No online match. Type the numbers yourself.";return}var gg=itemGrams(it,pp);document.getElementById("cmQK").value=Math.round(it.k*gg.g/100);document.getElementById("cmQP").value=Math.round((it.p||0)*gg.g/100);msg.textContent=it.src+": "+it.name+" (~"+Math.round(gg.g)+" g). Adjust if needed.";cmCalc()})}
+if(SMP&&USDA_OFF){msg.textContent="Asking Claude…";askClaude([name]).then(function(a){var x=Array.isArray(a)&&a[0];if(!x){msg.textContent="Couldn’t get an estimate.";return}document.getElementById("cmQK").value=Math.round(+x.kcal||0);document.getElementById("cmQP").value=Math.round(+x.protein||0);msg.textContent="Claude estimate · "+(x.basis||"typical portion")+". Adjust if needed.";cmCalc()},function(){msg.textContent="Couldn’t get an estimate. Type the numbers yourself."});return}
+var pp=parseFood(name);msg.textContent="Searching the USDA database…";usdaSearch(pp.words.join(" ")).then(function(list){return list},function(e){if(String(e&&e.message)!=="limit"){USDA_OFF=true;if(SMP){cmLookQ();return null}}msg.textContent=String(e&&e.message)==="limit"?"The free USDA lookup limit is used up for this hour.":"USDA can’t be reached from here. Type the numbers yourself.";return null}).then(function(list){if(!list)return;var it=list[0];if(!it){msg.textContent="No USDA match. Type the numbers yourself.";return}var gg=itemGrams(it,pp);document.getElementById("cmQK").value=Math.round(it.k*gg.g/100);document.getElementById("cmQP").value=Math.round((it.p||0)*gg.g/100);msg.textContent=it.src+": "+it.name+" (~"+Math.round(gg.g)+" g). Adjust if needed.";cmCalc()})}
 function cmSetEaten(d,k,on){var L=S.prot[d]=S.prot[d]||[],key="m:"+k;S.prot[d]=L.filter(function(e){return e[3]!==key});if(on){var mm=dayMeals(d).filter(function(x){return x.k===k})[0];if(mm)S.prot[d].push([mm.name+": "+mm.title,mm.prot,mm.kcal,key])}if(prot(d)>=PT){var h=S.habits[d]||[];h[1]=true;S.habits[d]=h}}
 function cmSave(){var o=cmRead(),ctx=CM.ctx,d=sel,msg=document.getElementById("cmMsg");
 if(CM.mode==="items"&&!o.items.length){msg.textContent="Add at least one item, or switch to “Just the totals”.";return}
@@ -855,6 +891,7 @@ if(ds.cmpick!=null){var pk=S.mylib[+ds.cmpick];document.getElementById("cmN").va
 if(ds.cmsave){cmSave();return}
 if(ds.cmtime!=null){CM.time=ds.cmtime;[].forEach.call(document.querySelectorAll("#cmTrk button"),function(x){x.classList.toggle("on",x===t)});cmCenterTime(true);return}
 if(ds.cmlook){cmLook();return}
+if(ds.cmalt!=null){cmUseUsda(t.closest(".cmit"),+ds.cmalt);return}
 if(ds.cmlookq){cmLookQ();return}
 if(ds.cmopt!=null){var bx=t.parentNode,o=bx._row._opts[+ds.cmopt];cmFill(bx._row,o.kcal,o.prot,o.src+": "+o.name+" (~"+o.g+" g)");bx.remove();return}
 if(ds.step){keep(function(){go(sel+(+ds.step))});return}
