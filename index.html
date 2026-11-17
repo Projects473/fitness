@@ -54,6 +54,9 @@ details summary{cursor:pointer;color:var(--muted);font-weight:600}
 .cmih{font-size:11px;color:var(--faint);font-weight:600;text-transform:uppercase}
 .cmits{display:grid;gap:6px;margin-top:4px}.cmit input{padding:8px 9px;font-size:13px}.cmit input.unk{border-color:rgba(245,158,11,.7)}
 .cmit button{height:30px;color:var(--muted)}.cmit button:hover{color:var(--red)}
+ .cmit .cmsrc{grid-column:1/-1;font-size:11.5px;color:var(--muted);margin:-2px 2px 2px}
+.cmlook{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;border-radius:14px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.35);font-size:12.5px}
+.cmres{display:grid;gap:6px;margin-top:8px}.cmres h4{margin:6px 2px 0;font-size:12.5px;color:var(--muted);font-weight:600}
 .cmpk{display:flex;gap:6px;flex-wrap:wrap}.cmpk button{padding:6px 11px;border-radius:999px;border:1px solid var(--border);background:var(--panel-2);font-size:12.5px}.cmpk button:hover{border-color:var(--green)}
 .mt{margin:4px 0 2px}.mt td{padding:6px 4px;font-size:13px}.meal h3{font-size:14.5px}
 .btn.syncbtn{height:42px;background:linear-gradient(135deg,var(--green-2),var(--green));color:#06210f;border:0;box-shadow:0 10px 26px -10px rgba(34,197,94,.8)}
@@ -381,6 +384,22 @@ var PQ=[["Protein shake, 1 scoop",24,120],["Chicken, small palm (~85 g)",25,180]
 var KG=1950;
 /* FOOD ESTIMATOR — values per 100 g (typical, USDA-style averages); units = grams per unit, first unit is the default */
 var FOODS=[
+["Egg (boiled / fried / scrambled)","egg boiled fried scrambled omelette omelet",155,13,"piece:50,large:56,medium:44,small:38"],
+["Banana / fig","banana fig ripe",89,1.1,"piece:118,medium:118,small:100,large:136"],
+["Yoghurt","yoghurt yogurt",80,4.5,"cup:245,pack:150,tbsp:15"],
+["Greek yoghurt","greek yoghurt yogurt",97,9,"cup:245,pack:150,tbsp:15"],
+["Callaloo (cooked)","callaloo dasheen bush spinach",30,2.5,"cup:180"],
+["Pumpkin (cooked)","pumpkin squash",26,1,"cup:245,slice:100"],
+["Eggplant / melongene (cooked)","eggplant melongene baigan choka",35,0.8,"cup:100"],
+["Avocado / zaboca","avocado zaboca pear",160,2,"half:100,slice:30,cup:150,piece:200"],
+["Cheese slice (processed)","cheese slice processed kraft",310,18,"slice:21"],
+["Toast with butter","toast butter",330,8,"slice:35"],
+["Bun / sweet bun","bun",300,8,"piece:70"],
+["Spaghetti / noodles (cooked)","spaghetti noodle noodles",158,5.8,"cup:140,plate:250"],
+["Ramen / instant noodles (cooked)","ramen instant noodles maggi",190,4,"pack:280,cup:230"],
+["Sandwich (bread + chicken/cheese)","sandwich",250,12,"piece:180"],
+["Smoothie (fruit)","smoothie",60,1,"cup:240,glass:300"],
+["Granola / cereal","granola cereal",450,10,"cup:110,bowl:60"],
 ["Whole-wheat bread","bread wheat brown wholewheat toast",247,13,"slice:32,loaf:600"],
 ["White bread","bread white hops sliced toast",265,9,"slice:28,loaf:600"],
 ["Hops bread","hops roll bun",280,9,"piece:60"],
@@ -551,7 +570,7 @@ function exDone(d){var l=S.logs[d]||{},n=0;for(var k in l)if(l[k].x)n++;return n
 
 function buildDoc(){var j=JSON.stringify(S).replace(/</g,"\\u003c"),c="</scr"+"ipt>";
 return '<!DOCTYPE html>\n<html lang="en" data-theme="gradient">\n<head>'+HEAD+'<style id="app-style">'+CSS+'</style>\n</head>\n<body>\n<div id="app"></div>\n<script id="state" type="application/json">'+j+c+'\n<script id="app-script">'+JS+c+'\n</body>\n</html>'}
-function normS(x){x=x||{};["habits","logs","shop","meas","notes","prot"].forEach(function(k){x[k]=x[k]||{}});x.start=x.start||"2026-11-17";return x}
+function normS(x){x=x||{};x.mylib=x.mylib||[];["habits","logs","shop","meas","notes","prot","cmeals","xmeals"].forEach(function(k){x[k]=x[k]||{}});x.start=x.start||"2026-11-17";return x}
 function localSave(){try{localStorage.setItem("fit30",JSON.stringify(S))}catch(e){}}
 var SY={mode:"device",err:"",db:null,ref:null,writing:false,dirty:false,pend:false,gh:null,gid:null,ptimer:null};
 function save(){S.updated=Date.now();localSave();schedulePush()}
@@ -697,6 +716,10 @@ Object.keys(b.logs).forEach(function(d){var x=o.logs[d]=o.logs[d]||{};Object.key
 Object.keys(b.shop).forEach(function(w){var x=o.shop[w]=o.shop[w]||{};Object.keys(b.shop[w]).forEach(function(k){if(b.shop[w][k])x[k]=true})});
 Object.keys(b.meas).forEach(function(m){var x=o.meas[m]=o.meas[m]||{};Object.keys(b.meas[m]).forEach(function(f){if(b.meas[m][f]&&!x[f])x[f]=b.meas[m][f]})});
 Object.keys(b.notes).forEach(function(d){var x=o.notes[d]||"",y=b.notes[d]||"";o.notes[d]=y.length>x.length?y:x});
+var bNew=(b.updated||0)>(a&&a.updated||0);
+Object.keys(b.cmeals).forEach(function(d){var x=o.cmeals[d]=o.cmeals[d]||{};Object.keys(b.cmeals[d]).forEach(function(k){if(!x[k]||bNew)x[k]=b.cmeals[d][k]})});
+Object.keys(b.xmeals).forEach(function(d){var x=o.xmeals[d]=o.xmeals[d]||[];b.xmeals[d].forEach(function(m){var i=x.findIndex(function(y){return y.k===m.k});if(i<0)x.push(m);else if(bNew)x[i]=m})});
+b.mylib.forEach(function(m){var i=o.mylib.findIndex(function(y){return y.title.toLowerCase()===m.title.toLowerCase()});if(i<0)o.mylib.push(m);else if(bNew)o.mylib[i]=m});
 if((b.updated||0)>(a&&a.updated||0)){["goal","kgoal","start"].forEach(function(k){if(b[k])o[k]=b[k]})}
 o.updated=Date.now();return o}
 function b64(u8){var s="";for(var i=0;i<u8.length;i+=8192)s+=String.fromCharCode.apply(null,u8.subarray(i,i+8192));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
@@ -728,7 +751,7 @@ m.innerHTML='<div class="card"><div class="hd"><div><h2>Log food · Day '+sel+'<
 document.body.appendChild(m)}
 function kbar(k){var over=k>KG*1.05;return '<div class="bar"><i style="width:'+Math.round(Math.min(1,k/KG)*100)+'%'+(over?';background:linear-gradient(90deg,#f59e0b,#f43f5e)':'')+'"></i></div>'+(over?'<p class="small" style="color:var(--amber);margin:4px 0 0">Over today’s calorie goal by '+(k-KG).toLocaleString()+' kcal</p>':'')}
 var CM={ctx:null,mode:"items"};
-function cmItemRow(i){var e=i&&i.t?estimate(i.t):null,man=i&&i.t&&!(e&&!e.none)?' data-man="1"':'';return '<div class="cmit"'+man+'><input type="text" class="cmT" placeholder="e.g. 1 cup rice" value="'+esc(i&&i.t||"")+'"><input type="text" inputmode="decimal" class="cmK" placeholder="kcal" value="'+(i&&i.t?Math.round(+i.kcal||0):"")+'"><input type="text" inputmode="decimal" class="cmP" placeholder="g" value="'+(i&&i.t?Math.round((+i.prot||0)*10)/10:"")+'"><button data-cmrow="1" title="Remove item" aria-label="Remove item">✕</button></div>'}
+function cmItemRow(i){var e=i&&i.t?cmEst(i.t):null,man=i&&i.t&&!e?' data-man="1"':'';return '<div class="cmit"'+man+'><input type="text" class="cmT" placeholder="e.g. 1 cup rice" value="'+esc(i&&i.t||"")+'"><input type="text" inputmode="decimal" class="cmK" placeholder="kcal" value="'+(i&&i.t?Math.round(+i.kcal||0):"")+'"><input type="text" inputmode="decimal" class="cmP" placeholder="g" value="'+(i&&i.t?Math.round((+i.prot||0)*10)/10:"")+'"><button data-cmrow="1" title="Remove item" aria-label="Remove item">✕</button>'+(i&&i.src?'<p class="cmsrc">'+esc(i.src)+'</p>':'')+'</div>'}
 function cmSheet(ctx){closeSheet();CM.ctx=ctx;var src=ctx.src,b=ctx.base,bt=b?{kcal:b.kcal,prot:b.prot}:null;CM.mode=src&&src.mode==="quick"?"quick":"items";
 var title=ctx.kind==="extra"?(src?"Edit extra meal":"Add an extra meal"):(src?"Edit custom "+b.name.toLowerCase():"Swap "+b.name.toLowerCase());
 var sub=ctx.kind==="extra"?"Adds on top of Day "+sel+"’s plan":"Replaces “"+(ctx.orig||b.title)+"” on Day "+sel+" only";
@@ -737,20 +760,39 @@ m.innerHTML='<div class="card cmf"><div class="hd" style="flex-wrap:nowrap;margi
 (S.mylib.length&&!src?'<label class="l">Pick from My Meals</label><div class="cmpk">'+S.mylib.map(function(c,i){return '<button data-cmpick="'+i+'">'+esc(c.title)+' · '+cmTot(c).kcal+' kcal</button>'}).join("")+'</div>':'')+
 '<div class="cmseg"><button data-cmmode="items"'+(CM.mode==="items"?' class="on"':'')+'>List the items</button><button data-cmmode="quick"'+(CM.mode==="quick"?' class="on"':'')+'>Just the totals</button></div>'+
 '<div class="cm2"><div><label class="l">Meal name</label><input type="text" id="cmN" placeholder="e.g. Bake and saltfish" value="'+esc(src?src.title:"")+'"></div><div><label class="l">Time</label><input type="text" id="cmTm" placeholder="e.g. 12:30 pm" value="'+esc(src?src.time||"":(b?b.time:""))+'"></div></div>'+
-'<div id="cmIB"'+(CM.mode==="items"?'':' style="display:none"')+'><label class="l">What’s in it</label><div class="cmih"><span>Amount + food</span><span>kcal</span><span>Protein</span><span></span></div><div class="cmits" id="cmIts">'+(src&&src.mode!=="quick"&&src.items&&src.items.length?src.items:[{},{}]).map(cmItemRow).join("")+'</div><button class="btn sm" data-cmaddrow="1" style="margin-top:8px">+ Add item</button><p class="small muted" style="margin:8px 0 0">Type like “1 cup rice”, “2 eggs”, “100 g saltfish” or “1 bake”. Calories and protein fill in automatically. If a food isn’t known, the box turns amber and you type the numbers yourself.</p></div>'+
-'<div id="cmQB"'+(CM.mode==="quick"?'':' style="display:none"')+'><div class="cm2"><div><label class="l">Calories (kcal)</label><input type="text" inputmode="decimal" id="cmQK" placeholder="e.g. 650" value="'+(src&&src.mode==="quick"?src.kcal:"")+'"></div><div><label class="l">Protein (g)</label><input type="text" inputmode="decimal" id="cmQP" placeholder="e.g. 30" value="'+(src&&src.mode==="quick"?src.prot:"")+'"></div></div><p class="small muted" style="margin:8px 0 0">Good for eating out when you don’t know the breakdown. Use the label or your best guess.</p></div>'+
+'<div id="cmIB"'+(CM.mode==="items"?'':' style="display:none"')+'><label class="l">What’s in it</label><div class="cmih"><span>Amount + food</span><span>kcal</span><span>Protein</span><span></span></div><div class="cmits" id="cmIts">'+(src&&src.mode!=="quick"&&src.items&&src.items.length?src.items:[{},{}]).map(cmItemRow).join("")+'</div><button class="btn sm" data-cmaddrow="1" style="margin-top:8px">+ Add item</button><div id="cmLook"></div><div class="cmres" id="cmRes"></div><p class="small muted" style="margin:8px 0 0">Type like “1 cup rice”, “2 eggs”, “100 g saltfish”, “1 bake” or even “2 bake and saltfish”. Calories and protein fill in automatically. If a food isn’t in the list, the box turns amber and a <b>Look up online</b> button appears. You can always type the numbers yourself.</p></div>'+
+'<div id="cmQB"'+(CM.mode==="quick"?'':' style="display:none"')+'><div class="cm2"><div><label class="l">Calories (kcal)</label><input type="text" inputmode="decimal" id="cmQK" placeholder="e.g. 650" value="'+(src&&src.mode==="quick"?src.kcal:"")+'"></div><div><label class="l">Protein (g)</label><input type="text" inputmode="decimal" id="cmQP" placeholder="e.g. 30" value="'+(src&&src.mode==="quick"?src.prot:"")+'"></div></div><p class="small muted" style="margin:8px 0 0">Good for eating out when you don’t know the breakdown. Use the label or your best guess, or look it up from the meal name.</p><button class="btn sm" data-cmlookq="1" style="margin-top:8px">🔎 Estimate online from the meal name</button><p class="small" id="cmQMsg" style="margin:6px 0 0"></p></div>'+
 '<div class="est"><div><b id="cmEK">0 kcal</b><span id="cmEP">0 g protein</span></div><span id="cmCmp" class="small muted" style="text-align:right"></span></div>'+
 '<div style="display:grid;gap:10px;margin-top:12px"><label class="ck"><input type="checkbox" id="cmSave"'+(src?'':' checked')+'>Save to My Meals so I can reuse it</label><label class="ck"><input type="checkbox" id="cmEat"'+((src?mealEaten(sel,ctx.k):true)?' checked':'')+'>Mark as eaten</label></div>'+
 '<p class="small" id="cmMsg" style="color:var(--amber);margin:8px 0 0"></p><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn" data-close>Cancel</button><button class="btn pri" data-cmsave="1">Save meal</button></div></div>';
-document.body.appendChild(m);CM.bt=bt;cmCalc()}
+document.body.appendChild(m);CM.bt=bt;cmCalc();cmLookBar()}
 function cmRead(){var o={title:(document.getElementById("cmN").value||"").trim()||"My meal",time:(document.getElementById("cmTm").value||"").trim(),mode:CM.mode};
 if(CM.mode==="quick"){o.kcal=Math.round(parseFloat(document.getElementById("cmQK").value)||0);o.prot=Math.round(parseFloat(document.getElementById("cmQP").value)||0)}
-else o.items=[].map.call(document.querySelectorAll("#cmIts .cmit"),function(r){return{t:r.querySelector(".cmT").value.trim(),kcal:Math.round(parseFloat(r.querySelector(".cmK").value)||0),prot:Math.round((parseFloat(r.querySelector(".cmP").value)||0)*10)/10}}).filter(function(i){return i.t});return o}
+else o.items=[].map.call(document.querySelectorAll("#cmIts .cmit"),function(r){var sp=r.querySelector(".cmsrc");return{src:sp?sp.textContent:undefined,t:r.querySelector(".cmT").value.trim(),kcal:Math.round(parseFloat(r.querySelector(".cmK").value)||0),prot:Math.round((parseFloat(r.querySelector(".cmP").value)||0)*10)/10}}).filter(function(i){return i.t});return o}
 function cmCalc(){var t=cmTot(cmRead()),e1=document.getElementById("cmEK");if(!e1)return;e1.textContent=t.kcal.toLocaleString()+" kcal";document.getElementById("cmEP").textContent=t.prot+" g protein";
 var c=document.getElementById("cmCmp");if(CM.bt&&CM.ctx.kind==="swap"){var dk=t.kcal-CM.bt.kcal,dp=t.prot-CM.bt.prot;c.innerHTML=(dk>=0?"+":"")+dk+" kcal · "+(dp>=0?"+":"")+dp+" g<br>vs the planned meal"}else c.textContent=""}
+function cmEst(txt){var e=estimate(txt);if(e&&!e.none)return{kcal:e.kcal,prot:e.prot};
+var parts=String(txt).split(/\s+(?:and|with|n)\s+|\s*[,+&]\s*/i).filter(function(x){return x.trim()});if(parts.length<2)return null;var k=0,p=0;
+for(var i=0;i<parts.length;i++){var x=estimate(parts[i]);if(!x||x.none)return null;k+=x.kcal;p+=x.prot}return{kcal:Math.round(k),prot:Math.round(p*10)/10}}
 function cmRowInput(r,which){var T=r.querySelector(".cmT"),K=r.querySelector(".cmK"),P=r.querySelector(".cmP");
-if(which==="t"){var e=T.value.trim()?estimate(T.value):null;if(e&&!e.none){K.value=e.kcal;P.value=e.prot;T.classList.remove("unk");r.removeAttribute("data-man")}else{T.classList.toggle("unk",!!T.value.trim());if(!r.hasAttribute("data-man")){K.value="";P.value=""}}}
-else{r.setAttribute("data-man","1");T.classList.remove("unk")}cmCalc()}
+if(which==="t"){var e=T.value.trim()?cmEst(T.value):null;if(e){K.value=e.kcal;P.value=e.prot;T.classList.remove("unk");r.removeAttribute("data-man")}else{T.classList.toggle("unk",!!T.value.trim());if(!r.hasAttribute("data-man")){K.value="";P.value=""}}}
+else{r.setAttribute("data-man","1");T.classList.remove("unk")}if(which==="t"){var sp=r.querySelector(".cmsrc");if(sp)sp.remove()}cmCalc();cmLookBar()}
+var SMP=null;try{if(window.claude&&claude.use)claude.use("sample").then(function(x){SMP=x||null}).catch(function(){})}catch(e){}
+function cmUnknown(){return[].filter.call(document.querySelectorAll("#cmIts .cmit"),function(r){var t=r.querySelector(".cmT").value.trim();return t&&!r.hasAttribute("data-man")&&!cmEst(t)&&!r.querySelector(".cmsrc")})}
+function cmLookBar(){var el=document.getElementById("cmLook");if(!el)return;var n=cmUnknown().length;el.innerHTML=n?'<div class="cmlook"><span>'+n+(n>1?' items aren’t':' item isn’t')+' in the food list.</span><button class="btn sm pri" data-cmlook="1">🔎 Look up online</button></div>':''}
+function cmFill(r,k,p,src){r.querySelector(".cmK").value=Math.round(k);r.querySelector(".cmP").value=Math.round(p*10)/10;r.setAttribute("data-man","1");r.querySelector(".cmT").classList.remove("unk");var sp=r.querySelector(".cmsrc");if(!sp){sp=document.createElement("p");sp.className="cmsrc";r.appendChild(sp)}sp.textContent=src;cmCalc();cmLookBar()}
+function askClaude(lines){return SMP.json('You estimate nutrition for a food tracker used in Grenada (Caribbean). For each numbered line, estimate total calories (kcal) and protein (g) for the amount written. If no amount is given, assume one normal single portion as served in Grenada. Use typical values for local dishes and fast-food chains where named. Reply with JSON only: an array of objects {"i":number,"kcal":number,"protein":number,"basis":"short description of the portion assumed, max 8 words"}, one per line, in the same order.\n\n'+lines.map(function(t,i){return(i+1)+". "+t}).join("\n"),{modelTier:"quick"})}
+function cmLook(){var rows=cmUnknown(),el=document.getElementById("cmLook"),res=document.getElementById("cmRes");if(!rows.length)return;
+if(SMP){el.innerHTML='<div class="cmlook"><span>Asking Claude for estimates…</span></div>';askClaude(rows.map(function(r){return r.querySelector(".cmT").value.trim()})).then(function(a){(Array.isArray(a)?a:[]).forEach(function(x,j){var r=rows[(+x.i||j+1)-1];if(r&&x.kcal!=null)cmFill(r,+x.kcal||0,+x.protein||0,"Claude estimate · "+(x.basis||"typical portion"))});cmLookBar()},function(e){el.innerHTML='<div class="cmlook"><span>'+(e&&e.code==="rate_limited"?"Too many lookups just now. Try again in a minute, or type the numbers.":"Couldn’t get an estimate. Type the numbers yourself.")+'</span></div>'});return}
+el.innerHTML='<div class="cmlook"><span>Searching USDA and Open Food Facts…</span></div>';res.innerHTML="";var done=0,any=false,lim=false;
+rows.forEach(function(r,ri){var txt=r.querySelector(".cmT").value.trim(),pp=parseFood(txt);if(!pp||!pp.words.length){done++;return}
+Promise.allSettled([usdaSearch(pp.words.join(" ")),offSearch(pp.words.join(" "))]).then(function(rs){var list=[];rs.forEach(function(x){if(x.status==="fulfilled")list=list.concat(x.value);else if(String(x.reason&&x.reason.message)==="limit")lim=true});list=list.slice(0,5);done++;
+if(list.length){any=true;r._opts=list.map(function(it){var gg=itemGrams(it,pp);return{name:it.name,src:it.src,g:Math.round(gg.g),kcal:it.k*gg.g/100,prot:(it.p||0)*gg.g/100}});
+var box=document.createElement("div");box.innerHTML='<h4>For “'+esc(txt)+'” — tap the closest match:</h4>'+r._opts.map(function(o,oi){return '<button class="onr" data-cmopt="'+oi+'"><span>'+esc(o.name)+'</span><em>'+Math.round(o.kcal)+' kcal · '+Math.round(o.prot*10)/10+' g · ~'+o.g+' g</em></button>'}).join("");box._row=r;res.appendChild(box)}
+if(done===rows.length){el.innerHTML=any?'':'<div class="cmlook"><span>'+(lim?"The free USDA lookup limit is used up for this hour.":"Online search couldn’t connect from here.")+' Type the numbers yourself.</span></div>'}})})}
+function cmLookQ(){var name=(document.getElementById("cmN").value||"").trim(),msg=document.getElementById("cmQMsg");if(!name){msg.textContent="Type the meal name first.";return}
+if(SMP){msg.textContent="Asking Claude…";askClaude([name]).then(function(a){var x=Array.isArray(a)&&a[0];if(!x){msg.textContent="Couldn’t get an estimate.";return}document.getElementById("cmQK").value=Math.round(+x.kcal||0);document.getElementById("cmQP").value=Math.round(+x.protein||0);msg.textContent="Claude estimate · "+(x.basis||"typical portion")+". Adjust if needed.";cmCalc()},function(){msg.textContent="Couldn’t get an estimate. Type the numbers yourself."});return}
+var pp=parseFood(name);msg.textContent="Searching…";Promise.allSettled([usdaSearch(pp.words.join(" ")),offSearch(pp.words.join(" "))]).then(function(rs){var list=[];rs.forEach(function(x){if(x.status==="fulfilled")list=list.concat(x.value)});var it=list[0];if(!it){msg.textContent="No online match. Type the numbers yourself.";return}var gg=itemGrams(it,pp);document.getElementById("cmQK").value=Math.round(it.k*gg.g/100);document.getElementById("cmQP").value=Math.round((it.p||0)*gg.g/100);msg.textContent=it.src+": "+it.name+" (~"+Math.round(gg.g)+" g). Adjust if needed.";cmCalc()})}
 function cmSetEaten(d,k,on){var L=S.prot[d]=S.prot[d]||[],key="m:"+k;S.prot[d]=L.filter(function(e){return e[3]!==key});if(on){var mm=dayMeals(d).filter(function(x){return x.k===k})[0];if(mm)S.prot[d].push([mm.name+": "+mm.title,mm.prot,mm.kcal,key])}if(prot(d)>=PT){var h=S.habits[d]||[];h[1]=true;S.habits[d]=h}}
 function cmSave(){var o=cmRead(),ctx=CM.ctx,d=sel,msg=document.getElementById("cmMsg");
 if(CM.mode==="items"&&!o.items.length){msg.textContent="Add at least one item, or switch to “Just the totals”.";return}
@@ -783,6 +825,9 @@ if(ds.cmaddrow){var box=document.getElementById("cmIts");box.insertAdjacentHTML(
 if(ds.cmrow){t.closest(".cmit").remove();cmCalc();return}
 if(ds.cmpick!=null){var pk=S.mylib[+ds.cmpick];document.getElementById("cmN").value=pk.title;var mb=document.querySelector('[data-cmmode="'+(pk.mode==="quick"?"quick":"items")+'"]');mb.click();if(pk.mode==="quick"){document.getElementById("cmQK").value=pk.kcal;document.getElementById("cmQP").value=pk.prot}else document.getElementById("cmIts").innerHTML=(pk.items||[]).map(cmItemRow).join("");document.getElementById("cmSave").checked=false;cmCalc();return}
 if(ds.cmsave){cmSave();return}
+if(ds.cmlook){cmLook();return}
+if(ds.cmlookq){cmLookQ();return}
+if(ds.cmopt!=null){var bx=t.parentNode,o=bx._row._opts[+ds.cmopt];cmFill(bx._row,o.kcal,o.prot,o.src+": "+o.name+" (~"+o.g+" g)");bx.remove();return}
 if(ds.step){keep(function(){go(sel+(+ds.step))});return}
 if(ds.go){go(+ds.go);setTab("workout");return}
 if(ds.mw){keep(function(){mweek=+ds.mw;render()});return}
