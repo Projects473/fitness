@@ -28,6 +28,11 @@
 .themebtn i.gradient{background:linear-gradient(160deg,#22c55e,#0d2a18 55%,#000)}
 .themebtn i.graffiti{background:radial-gradient(circle at 30% 30%,#4ade80 0 22%,transparent 24%),radial-gradient(circle at 70% 68%,#16a34a 0 18%,transparent 20%),#030403}
 .themebtn i.light{background:linear-gradient(160deg,#fff,#dcfce7)}
+.est{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding:12px 14px;border-radius:14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.35)}
+.est b{display:block;font-family:var(--disp);font-size:16px}.est span{display:block;color:var(--muted);font-size:12.5px}
+.alts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}.alts .pill{cursor:pointer;border:1px solid var(--border)}
+.onres{display:grid;gap:6px}.onr{display:flex;justify-content:space-between;gap:10px;text-align:left;background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:9px 12px;font-size:13px}.onr em{font-style:normal;color:var(--muted);font-size:12px;white-space:nowrap}.onr.on,.onr:hover{border-color:var(--green)}
+details summary{cursor:pointer;color:var(--muted);font-weight:600}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;min-height:100vh;color:var(--text);font:14px/1.5 var(--sans);background:var(--bgfx),var(--bg);background-attachment:fixed;-webkit-font-smoothing:antialiased}
@@ -321,6 +326,147 @@ function shop(w){if(w==="m")return MONTH.map(function(x){return[x[1],x[2],x[3],x
 var BUDGET=350;
 var PQ=[["Chicken, small palm (~85 g)",25,180],["Chicken, 150 g cooked",46,320],["Beans / lentils, 1½ cups",23,345],["Beans / lentils, ½ cup",8,115],["Tuna, 1 can",25,120],["Milk, 250 ml",8,125],["Oats, 50 g dry",7,190],["Bread, 1 slice",4,80],["Peanut butter, 1 tbsp",4,95],["Rice, ½ cup cooked",2,100],["Rice, 1 cup cooked",4,205],["Sweet potato / provisions, 1 fist",2,130],["Fruit (orange, apple, pawpaw slice)",1,70],["Cooking oil, 1 tbsp",0,120],["Soft drink, 1 can",0,140],["Sweetened juice / sorrel, 1 glass",0,120]];
 var KG=1950;
+/* FOOD ESTIMATOR — values per 100 g (typical, USDA-style averages); units = grams per unit, first unit is the default */
+var FOODS=[
+["Whole-wheat bread","bread wheat brown wholewheat toast",247,13,"slice:32,loaf:600"],
+["White bread","bread white hops sliced toast",265,9,"slice:28,loaf:600"],
+["Hops bread","hops roll bun",280,9,"piece:60"],
+["Bake (coconut / roast bake)","bake coconut roast",330,7,"piece:80,slice:80"],
+["Fried bake","fried bake float",350,7,"piece:70"],
+["Roti skin (dhalpuri)","roti dhalpuri buss up shut paratha",300,9,"piece:120"],
+["Chicken roti","roti chicken curry wrap",210,11,"piece:450"],
+["Dumpling (boiled)","dumpling dumplings flour",230,6,"piece:50"],
+["Doubles","doubles bara channa",230,7,"piece:120"],
+["Pholourie","pholourie",290,6,"piece:15"],
+["Macaroni pie","macaroni pie pasta bake mac cheese",230,9,"slice:150,piece:150,cup:200"],
+["Pasta / macaroni (cooked)","pasta macaroni spaghetti noodles",158,5.8,"cup:140,plate:250"],
+["White rice (cooked)","rice white boiled",130,2.7,"cup:158,spoon:40,plate:300,bowl:250,fist:130"],
+["Brown rice (cooked)","rice brown",112,2.6,"cup:195,spoon:40"],
+["Rice and peas","rice peas pigeon cook-up pelau",160,4.5,"cup:190,spoon:45,plate:300"],
+["Pelau","pelau cookup cook-up chicken rice",165,8,"cup:200,plate:350"],
+["Oats (dry)","oats oatmeal rolled porridge quaker",389,17,"cup:80,tbsp:5,spoon:10"],
+["Oatmeal (cooked with water)","porridge oatmeal cooked oats",71,2.5,"cup:234,bowl:300"],
+["Cornflakes","cornflakes cereal",357,7,"cup:28,bowl:40"],
+["Crackers","crackers crix cream biscuit saltine",440,9,"piece:8,pack:30"],
+["Flour tortilla / wrap","wrap tortilla",300,8,"piece:50"],
+["Sweet potato (boiled)","sweet potato potatoes provision provisions",76,1.4,"medium:150,cup:200,fist:130,piece:100,slice:30"],
+["Dasheen (boiled)","dasheen taro provision provisions",142,0.5,"piece:100,cup:132,fist:130"],
+["Yam (boiled)","yam provision provisions",116,1.5,"piece:100,cup:136,fist:130,slice:60"],
+["Breadfruit (boiled / roasted)","breadfruit",103,1.1,"slice:100,cup:220,piece:100"],
+["Cassava / manioc (boiled)","cassava manioc yuca",160,1.4,"cup:206,piece:100"],
+["Plantain (boiled)","plantain boiled",122,1.3,"piece:90,slice:30"],
+["Plantain (fried)","plantain fried ripe",236,1.5,"slice:30,piece:90"],
+["Potato (boiled)","potato irish",87,1.9,"medium:150,cup:156"],
+["French fries","fries chips french",312,3.4,"small:71,medium:117,large:154,pack:117"],
+["Corn on the cob","corn cob sweetcorn",96,3.4,"piece:100,cup:150"],
+["Chicken breast (cooked)","chicken breast grilled baked",165,31,"piece:170,palm:85,cup:140"],
+["Chicken thigh (cooked, no skin)","chicken thigh thighs",209,26,"piece:100,palm:85"],
+["Chicken drumstick (cooked)","chicken drumstick leg drumsticks",172,28,"piece:75,palm:85"],
+["Chicken, stewed / curry (with skin)","chicken stew stewed curry baked bbq barbecue",215,27,"palm:85,piece:100,cup:140"],
+["Fried chicken","chicken fried kfc",290,24,"piece:120"],
+["Chicken soup","soup chicken",50,4,"bowl:350,cup:245"],
+["Fish (cooked)","fish snapper kingfish tuna fresh jacks grilled steamed",130,26,"piece:150,palm:100,fillet:150"],
+["Fried fish","fish fried",230,22,"piece:150"],
+["Saltfish (cooked)","saltfish codfish buljol bacalao",150,25,"cup:120,palm:85"],
+["Tuna, canned in water","tuna can canned water",116,26,"can:120,cup:150,tbsp:15"],
+["Tuna, canned in oil","tuna can canned oil",198,29,"can:120,cup:150,tbsp:15"],
+["Sardines in oil","sardines sardine",208,25,"can:92,piece:12"],
+["Mackerel, canned","mackerel can canned",156,21,"can:155"],
+["Corned beef","corned beef bully",250,27,"can:340,tbsp:20,cup:150"],
+["Beef, stewed","beef stew stewed",250,26,"palm:85,cup:140"],
+["Pork, cooked","pork",240,27,"palm:85,piece:100"],
+["Hot dog / sausage","hot dog sausage frank",290,11,"piece:50"],
+["Red kidney beans (cooked)","beans red kidney stew peas stewed",127,8.7,"cup:177,spoon:45,tbsp:15"],
+["Lentils (cooked)","lentils lentil dhal dal",116,9,"cup:198,spoon:45,tbsp:15,bowl:300"],
+["Lentils / beans (dry)","dry dried raw lentils beans",340,23,"cup:190,tbsp:12"],
+["Pigeon peas (cooked)","peas pigeon gungo",121,6.8,"cup:168"],
+["Black-eyed peas (cooked)","black eye peas",116,7.7,"cup:170"],
+["Chickpeas / channa (cooked)","chickpeas channa garbanzo",164,8.9,"cup:164"],
+["Lentil soup","soup lentil dhal",70,4.5,"bowl:300,cup:245"],
+["Vegetable soup","soup vegetable veg",40,1.5,"bowl:300,cup:245"],
+["Oil down","oil down oildown",190,6,"bowl:400,plate:450,cup:240"],
+["Milk, whole","milk whole fresh",61,3.2,"glass:250,cup:244,ml:1"],
+["Milk, low-fat","milk skim low fat 2%",50,3.3,"glass:250,cup:244,ml:1"],
+["Powdered milk","powdered milk powder nido",496,26,"tbsp:8,cup:120"],
+["Evaporated milk","evaporated carnation milk",134,6.8,"tbsp:15,can:354"],
+["Condensed milk","condensed sweetened",321,7.9,"tbsp:19"],
+["Cheddar cheese","cheese cheddar",403,25,"slice:21,cup:113"],
+["Peanut butter","peanut butter pb",588,25,"tbsp:16,tsp:5"],
+["Peanuts","peanuts nuts",567,26,"handful:30,cup:146,pack:30"],
+["Soya chunks (dry)","soya soy chunks tvp",345,52,"cup:50,handful:20"],
+["Protein powder (whey)","protein whey shake powder",400,80,"scoop:30"],
+["Cabbage","cabbage coleslaw",25,1.3,"cup:90,plate:150"],
+["Carrots","carrot carrots",41,0.9,"medium:61,cup:128"],
+["Cucumber","cucumber",15,0.7,"medium:200,cup:104,slice:7"],
+["Tomato","tomato tomatoes",18,0.9,"medium:123,slice:20"],
+["Lettuce / salad greens","lettuce salad greens",15,1.4,"cup:50,plate:100"],
+["Sweet pepper","pepper sweet bell",26,1,"medium:120"],
+["Onion","onion",40,1.1,"medium:110"],
+["Mixed vegetables","vegetables veg mixed stir fry",65,3,"cup:180"],
+["Coleslaw","coleslaw slaw",150,1,"cup:120,spoon:40"],
+["Okra","okra ochro",33,1.9,"cup:160"],
+["Orange","orange",47,0.9,"medium:130"],
+["Apple","apple",52,0.3,"medium:180"],
+["Pawpaw / papaya","pawpaw papaya",43,0.5,"cup:145,slice:150"],
+["Mango","mango",60,0.8,"medium:200,cup:165"],
+["Pineapple","pineapple",50,0.5,"cup:165,slice:85"],
+["Watermelon","watermelon melon",30,0.6,"slice:280,cup:152"],
+["Guava","guava",68,2.6,"piece:55"],
+["Grapefruit","grapefruit",42,0.8,"half:123,medium:246"],
+["Soft drink / soda","soda soft drink coke pepsi sprite ting",41,0,"can:330,bottle:500,glass:250"],
+["Orange juice","juice orange",45,0.7,"glass:250,cup:240"],
+["Sweetened juice / punch","juice punch box sweetened",50,0,"glass:250,box:200,bottle:350"],
+["Sorrel (sweetened)","sorrel drink",50,0,"glass:250,cup:240"],
+["Coconut water","coconut water jelly",19,0.7,"glass:250,piece:300,bottle:350"],
+["Beer / lager","beer carib lager stag",43,0.4,"bottle:275,can:355,glass:250"],
+["Malt drink","malt malta",60,0.5,"bottle:275,can:330"],
+["Rum","rum spirit",231,0,"shot:44"],
+["Cocoa tea","cocoa tea hot chocolate",70,3,"cup:250"],
+["Coffee / tea (black)","coffee tea black ginger",1,0.1,"cup:240"],
+["Sugar","sugar",387,0,"tsp:4,tbsp:12.5"],
+["Honey","honey",304,0.3,"tbsp:21,tsp:7"],
+["Cooking oil","oil cooking vegetable olive",884,0,"tbsp:14,tsp:4.5"],
+["Butter / margarine","butter margarine",717,0.9,"tbsp:14,tsp:5"],
+["Coconut milk","coconut milk",230,2.3,"cup:240,tbsp:15"],
+["Mayonnaise","mayonnaise mayo",680,1,"tbsp:14"],
+["Ketchup","ketchup sauce",112,1.7,"tbsp:17"],
+["Chips / cheese curls","chips crisps cheese curls snacks",536,7,"pack:28,small:28"],
+["Biscuits / cookies","biscuit cookie cookies",480,6,"piece:12,pack:60"],
+["Chocolate bar","chocolate bar candy",535,7.7,"piece:45"],
+["Ice cream","ice cream",207,3.5,"scoop:66,cup:132"],
+["Cake","cake",380,4.5,"slice:80"],
+["Sweet bread / coconut drops","sweet bread coconut drops",400,5,"slice:60,piece:70"],
+["Pizza","pizza",266,11,"slice:107"],
+["Burger","burger hamburger",254,13,"piece:220"]];
+var UNITW={g:["g","gram","grams","gm","gms"],kg:["kg","kilo","kilos"],oz:["oz","ounce","ounces"],lb:["lb","lbs","pound","pounds"],ml:["ml","mls"],l:["l","litre","liter","litres","liters"],cup:["cup","cups"],tbsp:["tbsp","tablespoon","tablespoons","tbs","tbl"],tsp:["tsp","teaspoon","teaspoons"],slice:["slice","slices"],piece:["piece","pieces","pc","pcs","whole"],can:["can","cans","tin","tins"],glass:["glass","glasses"],bottle:["bottle","bottles"],bowl:["bowl","bowls"],plate:["plate","plates"],handful:["handful","handfuls"],scoop:["scoop","scoops"],shot:["shot","shots"],small:["small"],medium:["medium","med"],large:["large","big"],palm:["palm","palms"],fist:["fist","fists"],spoon:["spoon","spoons","spoonful","spoonfuls"],pack:["pack","packs","packet","packets","bag","bags"],box:["box","boxes"],fillet:["fillet","fillets"],loaf:["loaf","loaves"],half:["halves"]};
+var UNITMAP={};for(var uk in UNITW)UNITW[uk].forEach(function(w){UNITMAP[w]=uk});
+var GENERIC={g:1,kg:1000,oz:28.35,lb:453.6,ml:1,l:1000};
+var GENVOL={cup:240,tbsp:15,tsp:5,glass:250,bowl:300,plate:350,handful:30,spoon:40,scoop:30,shot:44,bottle:330,can:330,palm:85,fist:130,piece:100,slice:30,pack:30,box:200,fillet:150,loaf:600,half:100};
+var DEFN={bread:"Whole-wheat bread",rice:"White rice (cooked)",chicken:"Chicken, stewed / curry (with skin)",tuna:"Tuna, canned in water",lentil:"Lentils (cooked)",bean:"Red kidney beans (cooked)",fish:"Fish (cooked)",roti:"Roti skin (dhalpuri)",bake:"Bake (coconut / roast bake)",milk:"Milk, whole",oat:"Oats (dry)",oats:"Oats (dry)",juice:"Sweetened juice / punch",potato:"Potato (boiled)",provision:"Sweet potato (boiled)",soup:"Vegetable soup",pea:"Pigeon peas (cooked)",cheese:"Cheddar cheese",oil:"Cooking oil",peanut:"Peanuts",beef:"Beef, stewed",plantain:"Plantain (boiled)",pasta:"Pasta / macaroni (cooked)",macaroni:"Pasta / macaroni (cooked)",tea:"Coffee / tea (black)",coffee:"Coffee / tea (black)",beer:"Beer / lager",carib:"Beer / lager",drink:"Soft drink / soda",soda:"Soft drink / soda",coke:"Soft drink / soda"};
+var NUMW={a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,half:0.5,quarter:0.25,couple:2,few:3};
+var STOP={of:1,the:1,some:1,my:1,x:1,with:1,and:1,"&":1,serving:1,servings:1,portion:1,portions:1,ate:1,had:1,i:1};
+function stem(w){return w.length>3&&/s$/.test(w)&&!/ss$/.test(w)?w.replace(/(es|s)$/,function(m){return w.length>4&&/(ch|sh|x|o)es$/.test(w)?"":m==="es"?"e":""}):w}
+FOODS.forEach(function(f){var u={};f[4].split(",").forEach(function(p){var a=p.split(":");u[a[0]]=+a[1]});f.u=u;f.def=f[4].split(":")[0];f.tok=(f[0]+" "+f[1]).toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean).map(stem)});
+function numTok(t){if(/^\d+\/\d+$/.test(t)){var a=t.split("/");return a[0]/a[1]}if(t==="½")return .5;if(t==="¼")return .25;if(t==="¾")return .75;if(/^\d+(\.\d+)?$/.test(t))return +t;if(NUMW.hasOwnProperty(t))return NUMW[t];return null}
+function parseFood(str){var s=String(str||"").toLowerCase().replace(/(\d)([a-z½¼¾])/g,"$1 $2").replace(/([½¼¾])/g," $1 ").replace(/[,;()]/g," ").trim();if(!s)return null;
+var tk=s.split(/\s+/),q=null,i=0,v=numTok(tk[0]);
+if(v!=null){q=v;i=1;var v2=tk[1]!=null?numTok(tk[1]):null;if(v2!=null&&v2<1&&q>=1){q+=v2;i=2}else if(tk[1]==="and"&&tk[2]==="a"&&tk[3]==="half"){q+=.5;i=4}}
+if(tk[i]==="x")i++;
+var unit=null;if(tk[i]&&UNITMAP[tk[i]]){unit=UNITMAP[tk[i]];i++}else if(tk[i]==="serving"&&tk[i+1]==="spoon"){unit="spoon";i+=2}
+if(q==null&&tk[0]==="half"){q=.5}
+var rest=tk.slice(i).filter(function(w){return!STOP[w]});
+if(!unit){for(var j=rest.length-1;j>=0;j--){if(UNITMAP[rest[j]]&&!/^(l|g)$/.test(rest[j])){unit=UNITMAP[rest[j]];rest.splice(j,1);break}}}
+return{q:q==null?1:q,unit:unit,words:rest.map(stem),raw:str}}
+function matchFoods(words){if(!words.length)return[];var scored=FOODS.map(function(f,idx){var sc=0;words.forEach(function(w){if(f.tok.indexOf(w)>=0)sc+=1;else if(w.length>=3&&f.tok.some(function(t){return t.indexOf(w)===0||w.indexOf(t)===0&&t.length>=4}))sc+=.6});
+var nameTok=f[0].toLowerCase().replace(/[^a-z0-9 ]/g," ").split(/\s+/).map(stem);if(words.every(function(w){return nameTok.indexOf(w)>=0}))sc+=.5;return{i:idx,sc:sc/words.length-f[0].length/1000}});
+var out=scored.filter(function(x){return x.sc>=.5}).sort(function(a,b){return b.sc-a.sc}).map(function(x){return x.i});
+var core=words.filter(function(w){return!/^(cooked|boiled|plain|fresh|hot|cold)$/.test(w)}),dn=core.length===1&&DEFN[core[0]];if(dn){var di=FOODS.findIndex(function(f){return f[0]===dn});if(di>=0){out=out.filter(function(i){return i!==di});out.unshift(di)}}return out.slice(0,4)}
+function gramsFor(f,unit,q){var g;if(!unit)unit=f.def;if(f.u[unit])g=f.u[unit];else if(GENERIC[unit])g=GENERIC[unit];else if(/^(small|large)$/.test(unit))g=(f.u.medium||f.u.piece||150)*(unit==="small"?.7:1.4);else if(unit==="medium")g=f.u.piece||150;else g=GENVOL[unit]||100;return{g:g*q,unit:unit}}
+function estimate(str,force){var p=parseFood(str);if(!p)return null;var m=force!=null?[force]:matchFoods(p.words);if(!m.length)return{p:p,none:true};var f=FOODS[m[0]],gu=gramsFor(f,p.unit,p.q);
+return{p:p,f:f,fi:m[0],alts:matchFoods(p.words).filter(function(x){return x!==m[0]}).slice(0,3),g:Math.round(gu.g),unit:gu.unit,q:p.q,kcal:Math.round(f[2]*gu.g/100),prot:Math.round(f[3]*gu.g/100*10)/10}}
+function unitLabel(u,q){var plural=q>1&&!/^(g|kg|oz|lb|ml|l|tbsp|tsp|small|medium|large)$/.test(u);var L={tbsp:"tbsp",tsp:"tsp",medium:"medium",small:"small",large:"large",box:"box",glass:"glass"};var w=L[u]||u;if(plural)w=u==="glass"?"glasses":u==="box"?"boxes":u==="loaf"?"loaves":u==="half"?"halves":w+"s";return w}
+function fmtQ(q){return q===.5?"½":q===.25?"¼":q===.75?"¾":(Math.round(q*100)/100).toString()}
+
 var PT=90;
 
 /* ---------- state ---------- */
@@ -404,7 +550,7 @@ return o}
 function food(){var p=prot(sel),ts=TEMPLATE.reduce(function(a,b){return a+b[2]},0),tk=TEMPLATE.reduce(function(a,b){return a+b[3]},0);
 var o='<div class="grid g2"><div class="card"><div class="hd"><div><h2>Daily targets</h2><p class="sub">Male · 35 · 5′7″ · 165 lb · EC$350 a month for food</p></div><span class="badge g"><i></i>Fat loss</span></div><div class="ringrow">'+ring(p/PT,p+"g","of "+PT+" g today")+'<div class="kpis"><div class="kpi"><small>Calories</small><b>~1,900–2,000</b><span>kcal / day</span></div><div class="kpi"><small>Protein goal</small><b>'+PT+' g</b><span>'+(PT===90?"what EC$350 buys":PT===110?"with the stretch tips":"needs ~EC$600/month")+'</span></div><div class="kpi"><small>Fat</small><b>~55 g</b><span>oil, peanut butter, chicken</span></div><div class="kpi"><small>Carbs</small><b>~260 g</b><span>beans, oats, rice, bread</span></div></div></div>'+
 '<div class="row" style="margin-top:18px"><span>Daily protein goal</span><div class="seg">'+[90,110,140].map(function(g){return '<button data-goal="'+g+'" class="'+(PT===g?"on":"")+'">'+g+' g</button>'}).join("")+'</div></div></div>'+
-'<div class="card"><div class="hd"><div><h2>Calorie checker</h2><p class="sub">Day '+sel+' · protein and calories from what you log</p></div><span class="badge'+(kcal(sel)>KG*1.05?" a":" g")+'"><i></i>'+(kcal(sel)>KG*1.05?"Over":"On track")+'</span></div><div class="tiles" style="margin:0 0 12px"><div class="tile"><small>Eaten</small><b>'+kcal(sel).toLocaleString()+' kcal</b><span>'+prot(sel)+' g protein</span></div><div class="tile"><small>Left today</small><b>'+Math.max(0,KG-kcal(sel)).toLocaleString()+' kcal</b><span>goal '+KG.toLocaleString()+'</span></div></div>'+kbar(kcal(sel))+'<div class="row"><span>Calorie goal</span><div class="seg">'+[1800,1950,2100].map(function(g){return '<button data-kgoal="'+g+'" class="'+(KG===g?"on":"")+'">'+g.toLocaleString()+'</button>'}).join("")+'</div></div><div class="qa" style="margin-top:12px">'+PQ.slice(0,6).map(function(q,i){return '<button data-qa="'+i+'"><b>'+q[2]+' kcal · '+q[1]+' g</b><span>'+q[0]+'</span></button>'}).join("")+'</div><button class="btn sm pri" id="fab3" style="margin-top:10px">All foods, custom entry & undo</button></div></div>';
+'<div class="card"><div class="hd"><div><h2>Calorie checker</h2><p class="sub">Day '+sel+' · protein and calories from what you log</p></div><span class="badge'+(kcal(sel)>KG*1.05?" a":" g")+'"><i></i>'+(kcal(sel)>KG*1.05?"Over":"On track")+'</span></div><div class="tiles" style="margin:0 0 12px"><div class="tile"><small>Eaten</small><b>'+kcal(sel).toLocaleString()+' kcal</b><span>'+prot(sel)+' g protein</span></div><div class="tile"><small>Left today</small><b>'+Math.max(0,KG-kcal(sel)).toLocaleString()+' kcal</b><span>goal '+KG.toLocaleString()+'</span></div></div>'+kbar(kcal(sel))+'<h2 style="margin:16px 0 0;font-size:14px">Type any food</h2>'+smartBox()+'<div class="row"><span>Calorie goal</span><div class="seg">'+[1800,1950,2100].map(function(g){return '<button data-kgoal="'+g+'" class="'+(KG===g?"on":"")+'">'+g.toLocaleString()+'</button>'}).join("")+'</div></div><div class="qa" style="margin-top:12px">'+PQ.slice(0,6).map(function(q,i){return '<button data-qa="'+i+'"><b>'+q[2]+' kcal · '+q[1]+' g</b><span>'+q[0]+'</span></button>'}).join("")+'</div><button class="btn sm pri" id="fab3" style="margin-top:10px">All foods, custom entry & undo</button></div></div>';
 o+='<h1 class="sec">A typical day on EC$350</h1><div class="card"><table><tr><th>Meal</th><th>What</th><th class="r">Protein</th><th class="r">kcal</th></tr>'+TEMPLATE.map(function(r){return '<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td class="r">'+r[2]+' g</td><td class="r">~'+r[3]+'</td></tr>'}).join("")+'<tr class="tot"><td>Total</td><td></td><td class="r">~'+ts+' g</td><td class="r">~'+tk.toLocaleString()+'</td></tr></table>'+
 '<div class="banner warn" style="margin-bottom:0"><b>Straight answer:</b> EC$350 a month gets you to about 90 g of protein a day, not 130–140 g. At the price estimates used here, 130–140 g costs around EC$600 a month. 90 g (about 1.2 g per kg) is still enough to protect muscle while you lose fat. Gains in size will just be slower. Beans and lentils carry the plan because they’re the cheapest protein per dollar.</div></div>';
 o+='<div class="grid g2e" style="margin-top:16px"><div class="card"><h2>How the targets were worked out</h2><table style="margin-top:8px"><tr><td>Resting burn (Mifflin-St Jeor: 74.8 kg, 170 cm, 35 y, male)</td><td class="r">≈ 1,640</td></tr><tr><td>× 1.45 (desk job + 30 min training most days)</td><td class="r">≈ 2,380</td></tr><tr><td>− ~400–500 kcal deficit</td><td class="r"><b>≈ 1,900–2,000</b></td></tr></table><p class="small muted">Expect about 0.5–1 lb a week. After Day 14: waist not moving → ½ cup less rice at dinner; losing over 1.5 lb a week or always drained → add a slice of bread with peanut butter.</p></div>'+
@@ -430,11 +576,38 @@ return '<div class="grid g2"><div class="card"><div class="hd"><div><h2>30-day c
 '<div class="card"><h2>Start date</h2><p class="sub">Day 1 can be any day. Weeks after that start on Monday, and the app opens on today automatically.</p><input type="date" id="start" value="'+esc(S.start)+'" style="margin:12px 0 18px"><h2>Protein log</h2><p class="sub">Days that hit 130 g+</p><div class="tiles"><div class="tile"><small>On target</small><b>'+(function(){var n=0;for(var d=1;d<=30;d++)if(prot(d)>=130)n++;return n})()+'</b><span>days</span></div><div class="tile"><small>Average logged</small><b>'+(function(){var n=0,s=0;for(var d=1;d<=30;d++){var v=prot(d);if(v){n++;s+=v}}return n?Math.round(s/n):0})()+' g</b><span>on days logged</span></div></div><button class="btn sm danger" id="reset">Reset all tracking</button></div></div>'+
 '<div class="card" style="margin-top:16px"><div class="hd"><div><h2>Measurements</h2><p class="sub">Morning, before eating · waist at the navel · add front & side photos on the same days</p></div></div><div style="overflow-x:auto"><table><tr><th></th>'+M.map(function(m){return '<th>'+m[1]+'</th>'}).join("")+'</tr>'+F.map(function(f){return '<tr><td><b>'+f[1]+'</b></td>'+M.map(function(m){return '<td><input type="text" data-m="'+m[0]+'" data-f="'+f[0]+'" value="'+esc((S.meas[m[0]]||{})[f[0]])+'"></td>'}).join("")+'</tr>'}).join("")+'</table></div></div>'}
 
+
+function smartBox(){return '<div class="smart"><div class="log" style="grid-template-columns:1fr auto;margin-top:8px"><input type="text" class="fq" placeholder="Type food + amount, e.g. 2 slices bread" autocomplete="off" enterkeyhint="done"><button class="btn sm" data-online>Search online</button></div><div class="fprev"></div></div>'}
+function itemGrams(it,p){var u=p.unit;if(u&&it.m&&it.m.length){var ws=UNITW[u]||[u];for(var i=0;i<it.m.length;i++){if(ws.some(function(w){return new RegExp("\\b"+w+"\\b").test(it.m[i].t)}))return{g:it.m[i].g*p.q,u:u}}}
+if(u&&GENERIC[u])return{g:GENERIC[u]*p.q,u:u};if(u)return{g:(GENVOL[u]||100)*p.q,u:u};if(it.m&&it.m.length)return{g:it.m[0].g*p.q,u:"serving",t:it.m[0].t};return{g:100*p.q,u:"g100"}}
+function curEst(box){var q=box.querySelector(".fq").value;if(!q.trim())return null;var p=parseFood(q);
+if(box._online){var it=box._online,gg=itemGrams(it,p);return{name:it.name,src:it.src,g:Math.round(gg.g),label:it.name+" · "+(gg.u==="g100"?Math.round(gg.g)+" g":gg.u==="serving"?fmtQ(p.q)+" × "+gg.t:fmtQ(p.q)+" "+unitLabel(gg.u,p.q)),kcal:Math.round(it.k*gg.g/100),prot:Math.round((it.p||0)*gg.g/10)/10}}
+var e=estimate(q,box.dataset.force?+box.dataset.force:null);if(!e||e.none)return{none:true,p:p};
+return{name:e.f[0],g:e.g,alts:e.alts,label:e.f[0]+" · "+fmtQ(e.q)+" "+unitLabel(e.unit,e.q),kcal:e.kcal,prot:e.prot}}
+function renderPrev(box){var out=box.querySelector(".fprev"),e=curEst(box),h="";
+if(!e){out.innerHTML='<p class="small muted" style="margin:6px 2px 0">Examples: “2 slices bread”, “1 cup rice”, “150 g chicken”, “1 can tuna”, “a bowl of oil down”. No amount means 1 normal portion.</p>'}
+else if(e.none){h='<div class="banner info" style="margin:8px 0 0">Not in the built-in list. Tap <b>Search online</b>, or enter the numbers yourself below.</div>'}
+else{h='<div class="est"><div><b>≈ '+e.kcal.toLocaleString()+' kcal · '+e.prot+' g protein</b><span>'+esc(e.label)+' (~'+e.g+' g)'+(e.src?' · '+e.src:'')+'</span></div><button class="btn sm pri" data-fadd>Add</button></div>';
+if(e.alts&&e.alts.length)h+='<div class="alts"><span class="small muted">Not right?</span>'+e.alts.map(function(i){return '<button class="pill" data-alt="'+i+'">'+esc(FOODS[i][0])+'</button>'}).join("")+'</div>'}
+if(box._res){h+=box._res.length?'<div class="onres"><p class="small muted" style="margin:10px 2px 4px">Online results, per 100 g. Tap the closest match:</p>'+box._res.map(function(r,i){return '<button class="onr'+(box._online===r?" on":"")+'" data-on="'+i+'"><span>'+esc(r.name)+'</span><em>'+Math.round(r.k)+' kcal · '+(Math.round((r.p||0)*10)/10)+' g · '+r.src+'</em></button>'}).join("")+'</div>':'<p class="small muted" style="margin:8px 2px 0">No online matches. Try simpler words, e.g. “bread” instead of “my mom’s bread”.</p>'}
+if(box._msg)h+='<p class="small" style="color:var(--amber);margin:8px 2px 0">'+box._msg+'</p>';
+if(e||box._res||box._msg)out.innerHTML=h}
+function usdaSearch(q){var key="DEMO_KEY";try{key=localStorage.getItem("fit30fdc")||"DEMO_KEY"}catch(e){}
+return fetch("https://api.nal.usda.gov/fdc/v1/foods/search?api_key="+encodeURIComponent(key)+"&query="+encodeURIComponent(q)+"&pageSize=6&dataType="+encodeURIComponent("Survey (FNDDS),SR Legacy,Foundation")).then(function(r){if(r.status===429)throw new Error("limit");if(!r.ok)throw new Error("usda");return r.json()}).then(function(j){return(j.foods||[]).map(function(f){var fn=f.foodNutrients||[];function n(num,id){var x=fn.filter(function(z){return String(z.nutrientNumber)===num||z.nutrientId===id})[0];return x?x.value:null}
+var k=n("208",1008);if(k==null){var kj=n("268",1062);if(kj!=null)k=kj/4.184}
+return{name:(f.description||"").replace(/\b\w/,function(c){return c.toUpperCase()}),k:k,p:n("203",1003),m:(f.foodMeasures||[]).map(function(m){return{t:String(m.disseminationText||m.measureUnitName||"").toLowerCase(),g:m.gramWeight}}).filter(function(m){return m.g}),src:"USDA"}}).filter(function(x){return x.k!=null})})}
+function offSearch(q){return fetch("https://world.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=6&fields=product_name,brands,nutriments,serving_quantity,serving_size").then(function(r){if(!r.ok)throw new Error("off");return r.json()}).then(function(j){return(j.products||[]).map(function(p){var nu=p.nutriments||{};return{name:(p.product_name||"Product")+(p.brands?" ("+String(p.brands).split(",")[0]+")":""),k:nu["energy-kcal_100g"]!=null?+nu["energy-kcal_100g"]:(nu["energy_100g"]!=null?nu["energy_100g"]/4.184:null),p:+(nu.proteins_100g||0),m:p.serving_quantity?[{t:"serving "+(p.serving_size||""),g:+p.serving_quantity}]:[],src:"Open Food Facts"}}).filter(function(x){return x.k!=null&&x.name})})}
+function goOnline(box){var p=parseFood(box.querySelector(".fq").value);if(!p||!p.words.length){box._msg="Type a food first.";renderPrev(box);return}
+var q=p.words.join(" ");box._msg="Searching USDA and Open Food Facts…";box._res=null;renderPrev(box);
+Promise.allSettled([usdaSearch(q),offSearch(q)]).then(function(rs){var res=[],lim=false;rs.forEach(function(r){if(r.status==="fulfilled")res=res.concat(r.value);else if(String(r.reason&&r.reason.message)==="limit")lim=true});
+if(rs.every(function(r){return r.status==="rejected"})){box._msg=lim?"The free USDA demo key has hit its hourly limit. Try again later, or add your own free key below.":"Online search couldn’t connect. The claude.ai link blocks outside websites, so online search works on your GitHub Pages copy. The built-in list works everywhere.";box._res=null}
+else{box._msg=lim?"USDA hourly limit reached; showing Open Food Facts only.":"";box._res=res.slice(0,8)}renderPrev(box)})}
+function addEst(box){var e=curEst(box);if(!e||e.none)return;(S.prot[sel]=S.prot[sel]||[]).push([e.label,e.prot,e.kcal]);if(prot(sel)>=PT){var h=S.habits[sel]||[];h[1]=true;S.habits[sel]=h}save();var open=!!document.getElementById("sheet");keep(render);if(open){closeSheet();sheet()}}
 function sheet(){var list=S.prot[sel]||[],k=kcal(sel),p=prot(sel);var m=document.createElement("div");m.className="sheet";m.id="sheet";
 m.innerHTML='<div class="card"><div class="hd"><div><h2>Log food · Day '+sel+'</h2><p class="sub">Tap what you ate. Each tap counts protein and calories.</p></div><button class="iconbtn" data-close aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'+
 '<div class="row" style="margin-top:0"><span>Calories</span><b>'+k.toLocaleString()+' / '+KG.toLocaleString()+' kcal</b></div>'+kbar(k)+'<div class="row"><span>Protein</span><b>'+p+' / '+PT+' g</b></div>'+bar(p/PT)+
-'<div class="qa" style="margin-top:14px">'+PQ.map(function(q,i){return '<button data-qa="'+i+'"><b>'+q[2]+' kcal'+(q[1]?' · '+q[1]+' g':'')+'</b><span>'+q[0]+'</span></button>'}).join("")+'</div>'+
-'<h2 style="margin:18px 0 8px;font-size:14px">Something else</h2><div class="log" style="grid-template-columns:2fr 1fr 1fr auto"><input type="text" id="cn" placeholder="Food"><input type="text" id="ck" inputmode="numeric" placeholder="kcal"><input type="text" id="cp" inputmode="numeric" placeholder="Protein g"><button class="btn sm pri" id="addc">Add</button></div>'+
+'<h2 style="margin:16px 0 0;font-size:14px">Type any food</h2>'+smartBox()+'<h2 style="margin:18px 0 0;font-size:14px">Quick add</h2><div class="qa" style="margin-top:8px">'+PQ.map(function(q,i){return '<button data-qa="'+i+'"><b>'+q[2]+' kcal'+(q[1]?' · '+q[1]+' g':'')+'</b><span>'+q[0]+'</span></button>'}).join("")+'</div>'+
+'<details style="margin-top:16px"><summary class="small">Know the exact numbers? Enter them</summary><div style="margin-top:8px"><div class="log" style="grid-template-columns:2fr 1fr 1fr auto"><input type="text" id="cn" placeholder="Food"><input type="text" id="ck" inputmode="numeric" placeholder="kcal"><input type="text" id="cp" inputmode="numeric" placeholder="Protein g"><button class="btn sm pri" id="addc">Add</button></div></div></details><details style="margin-top:10px"><summary class="small">Your own free USDA key (optional)</summary><p class="small muted">The built-in demo key allows about 30 searches an hour. A free key from api.data.gov/signup removes that limit. It is saved on this device only.</p><div class="log" style="grid-template-columns:1fr auto"><input type="text" id="fdck" placeholder="Paste key" value="'+esc((function(){try{return localStorage.getItem("fit30fdc")||""}catch(e){return""}})())+'"><button class="btn sm" id="fdcsave">Save</button></div></details>'+
 (list.length?'<h2 style="margin:18px 0 6px;font-size:14px">Logged today</h2><div class="list">'+list.map(function(x,i){var kc=x[2]!=null?x[2]:(PQ.filter(function(q){return q[0]===x[0]})[0]||[0,0,0])[2];return '<div class="ck" style="display:flex"><span>'+esc(x[0])+'</span><em>'+kc+' kcal · '+x[1]+' g <button class="btn sm" data-undo="'+i+'" style="margin-left:8px">Remove</button></em></div>'}).join("")+'</div>':"")+'</div>';
 document.body.appendChild(m)}
 function kbar(k){var over=k>KG*1.05;return '<div class="bar"><i style="width:'+Math.round(Math.min(1,k/KG)*100)+'%'+(over?';background:linear-gradient(90deg,#f59e0b,#f43f5e)':'')+'"></i></div>'+(over?'<p class="small" style="color:var(--amber);margin:4px 0 0">Over today’s calorie goal by '+(k-KG).toLocaleString()+' kcal</p>':'')}
@@ -455,6 +628,11 @@ if(ds.mw){keep(function(){mweek=+ds.mw;render()});return}
 if(ds.gw){keep(function(){gweek=ds.gw==="m"?"m":+ds.gw;render()});return}
 if(ds.goal){PT=+ds.goal;S.goal=PT;save();keep(render);return}
 if(ds.qa){var q=PQ[+ds.qa];(S.prot[sel]=S.prot[sel]||[]).push([q[0],q[1],q[2]]);if(prot(sel)>=PT){var h=S.habits[sel]||[];h[1]=true;S.habits[sel]=h}save();var open=!!document.getElementById("sheet");keep(render);if(open){closeSheet();sheet()};return}
+if(ds.fadd!==undefined){addEst(t.closest(".smart"));return}
+if(ds.alt){var bx=t.closest(".smart");bx.dataset.force=ds.alt;bx._online=null;renderPrev(bx);return}
+if(ds.online!==undefined){goOnline(t.closest(".smart"));return}
+if(ds.on){var bx2=t.closest(".smart");bx2._online=bx2._res[+ds.on];renderPrev(bx2);return}
+if(t.id==="fdcsave"){try{localStorage.setItem("fit30fdc",document.getElementById("fdck").value.trim())}catch(x){}t.textContent="Saved";return}
 if(t.id==="addc"){var n=(document.getElementById("cn").value||"Other food").trim(),k=+document.getElementById("ck").value||0,g=+document.getElementById("cp").value||0;if(!k&&!g)return;(S.prot[sel]=S.prot[sel]||[]).push([n,g,k]);if(prot(sel)>=PT){var hh2=S.habits[sel]||[];hh2[1]=true;S.habits[sel]=hh2}save();keep(render);closeSheet();sheet();return}
 if(ds.kgoal){KG=+ds.kgoal;S.kgoal=KG;save();keep(render);return}
 if(ds.undo){S.prot[sel].splice(+ds.undo,1);save();keep(render);closeSheet();sheet();return}
@@ -474,6 +652,8 @@ else if(t.id==="note"){S.notes[d]=t.value;save();return}
 else if(t.id==="start"){S.start=t.value;if(S.start){var x=dayFromDate();if(x>=1&&x<=30)sel=x}}
 else return;
 save();keep(render)});
+document.addEventListener("input",function(e){var t=e.target;if(t.classList&&t.classList.contains("fq")){var box=t.closest(".smart");box._online=null;box._res=null;box._msg="";box.dataset.force="";renderPrev(box)}});
+document.addEventListener("keydown",function(e){var t=e.target;if(e.key==="Enter"&&t.classList&&t.classList.contains("fq")){e.preventDefault();addEst(t.closest(".smart"))}});
 document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"){var a=t.closest(".art");if(a)a.classList.add("bad")}},true);
 window.addEventListener("hashchange",function(){var h=location.hash.slice(1);if(h!==tab&&TABS.some(function(t){return t[0]===h})){tab=h;render()}});
 render();
