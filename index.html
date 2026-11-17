@@ -35,6 +35,26 @@
 details summary{cursor:pointer;color:var(--muted);font-weight:600}
 .saved.off i{background:var(--faint);box-shadow:none}.saved.err i{background:var(--amber);box-shadow:0 0 8px var(--amber)}
 #refresh.spin svg{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.meal.cust{border-color:rgba(96,165,250,.5)}.meal.cust.done{border-color:rgba(34,197,94,.55)}
+.ctag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(96,165,250,.15);color:var(--blue);border:1px solid rgba(96,165,250,.35);white-space:nowrap}
+.ctag.x{background:rgba(245,158,11,.12);color:#fcd34d;border-color:rgba(245,158,11,.35)}
+[data-theme=light] .ctag{color:#1d4ed8}[data-theme=light] .ctag.x{color:#92400e}
+.macts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.btn.gh{background:none;border-color:transparent;color:var(--muted)}.btn.gh:hover{color:var(--text);border-color:var(--border)}
+.addmeal{border:1.5px dashed var(--border-2);background:none;border-radius:var(--r);min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-weight:600;width:100%}
+.addmeal:hover{border-color:var(--green);color:var(--green-2)}.addmeal b{font-size:28px;line-height:1;font-weight:400}
+.mlib{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.mchip{display:inline-flex;gap:8px;align-items:center;padding:6px 6px 6px 12px;border-radius:999px;background:var(--panel-2);border:1px solid var(--border);font-size:12.5px}
+.mchip em{font-style:normal;color:var(--muted)}.mchip button{width:24px;height:24px;border-radius:50%;color:var(--muted)}.mchip button:hover{background:rgba(244,63,94,.2);color:var(--red)}
+.cmseg{display:flex;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:4px;margin:12px 0 4px}
+.cmseg button{flex:1;height:34px;border-radius:999px;font-weight:600;font-size:12.5px;color:var(--muted)}.cmseg button.on{background:var(--panel-2);color:var(--text);box-shadow:0 0 0 1px var(--green)}
+.cmf label.l{display:block;font-size:12px;color:var(--muted);font-weight:600;margin:10px 0 4px}
+.cm2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cmit,.cmih{display:grid;grid-template-columns:1fr 70px 62px 30px;gap:6px;align-items:center}
+.cmih{font-size:11px;color:var(--faint);font-weight:600;text-transform:uppercase}
+.cmits{display:grid;gap:6px;margin-top:4px}.cmit input{padding:8px 9px;font-size:13px}.cmit input.unk{border-color:rgba(245,158,11,.7)}
+.cmit button{height:30px;color:var(--muted)}.cmit button:hover{color:var(--red)}
+.cmpk{display:flex;gap:6px;flex-wrap:wrap}.cmpk button{padding:6px 11px;border-radius:999px;border:1px solid var(--border);background:var(--panel-2);font-size:12.5px}.cmpk button:hover{border-color:var(--green)}
 .mt{margin:4px 0 2px}.mt td{padding:6px 4px;font-size:13px}.meal h3{font-size:14.5px}
 .btn.syncbtn{height:42px;background:linear-gradient(135deg,var(--green-2),var(--green));color:#06210f;border:0;box-shadow:0 10px 26px -10px rgba(34,197,94,.8)}
 .code{width:100%;min-height:90px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
@@ -331,7 +351,7 @@ if(t.indexOf("stew")>=0||t.indexOf("stewed")>=0)return "Season with garlic, onio
 if(t.indexOf("grilled")>=0||t.indexOf("baked")>=0||t.indexOf("roast")>=0)return "Season the night before. Grill or bake at 200°C / 400°F for about 30 minutes, until it reaches 74°C / 165°F inside.";
 if(t.indexOf("rice")>=0)return "Use rice and chicken cooked on Sunday or Wednesday. Reheat together with the beans or lentils, and serve the lettuce and tomato on the side.";
 return "Use your batch-cooked chicken and beans; reheat and plate with the sides.";}
-function dayMeals(d){var w=mw(d),k=wd(d),m=MEALS[w][k],rest=W[k].k!=="Strength",fr=FRUITS[(d-1)%3];
+function planMeals(d){var w=mw(d),k=wd(d),m=MEALS[w][k],rest=W[k].k!=="Strength",fr=FRUITS[(d-1)%3];
 var lunch=[CUT[w],m[2]==="b"?"½ cup red beans":"½ cup lentils",m[3]==="r"?"1 cup rice":"1 fist provisions","1 cup lettuce","½ medium tomato","2 tsp oil"];
 var dm=m[5]==="t"?["1 can tuna","½ cup red beans"]:m[5]==="u"?["1 can tuna","½ cup lentils"]:[m[5]==="l"?"1½ cups lentils":"1½ cups red beans"];
 var dinner=dm.concat(m[6]==="r"?["1 cup rice"]:[m[6]==="s"?"1 medium sweet potato":"1 fist provisions","½ cup rice"]).concat([/carrot|vegetable|soup/i.test(m[4])?"½ cup carrots":"1 cup lettuce","1 slice bread","1 tbsp oil"]);
@@ -341,6 +361,10 @@ return[{k:"B",time:"7:00 am",name:"Breakfast",title:BFT[m[0]],items:b},
 {k:"L",time:"12:30 pm",name:"Lunch",title:m[1],items:lunch},
 {k:"A",time:"3:30 pm",name:"Afternoon",title:"Shake 2 + fruit",items:["1 scoop protein",fr]},
 {k:"D",time:"7:00 pm",name:"Dinner",title:m[4],items:dinner}].map(function(x){var kc=0,pr=0;x.rows=x.items.map(function(it){var e=estimate(it);kc+=e.kcal;pr+=e.prot;return{t:it,kcal:e.kcal,prot:e.prot,name:e.f[0]}});x.kcal=kc;x.prot=Math.round(pr);x.tip=tipFor(x.title,x.k);return x})}
+function cmTot(m){if(m.mode==="quick")return{kcal:Math.round(+m.kcal||0),prot:Math.round(+m.prot||0)};var k=0,p=0;(m.items||[]).forEach(function(i){k+=+i.kcal||0;p+=+i.prot||0});return{kcal:Math.round(k),prot:Math.round(p)}}
+function cmRows(m){return m.mode==="quick"?[]:(m.items||[]).map(function(i){return{t:i.t,kcal:Math.round(+i.kcal||0),prot:+i.prot||0}})}
+function dayMeals(d){var sw=S.cmeals[d]||{},out=planMeals(d).map(function(x){var c=sw[x.k];if(!c)return x;var t=cmTot(c);return{k:x.k,time:c.time||x.time,name:x.name,title:c.title,custom:true,orig:x.title,mode:c.mode,rows:cmRows(c),kcal:t.kcal,prot:t.prot,tip:""}});
+(S.xmeals[d]||[]).forEach(function(c){var t=cmTot(c);out.push({k:c.k,time:c.time||"Anytime",name:"Extra",title:c.title,extra:true,mode:c.mode,rows:cmRows(c),kcal:t.kcal,prot:t.prot,tip:""})});return out}
 function mealEaten(d,k){return(S.prot[d]||[]).some(function(e){return e[3]==="m:"+k})}
 var TEMPLATE=[["Breakfast","50 g oats cooked in ~130 ml milk + 1 tbsp peanut butter (or 2 slices PB toast + milk)",15,350],["Lunch","Small palm of chicken (~85 g cooked) + ½ cup beans or lentils + ½ cup rice or provisions + lettuce & tomato",36,520],["Shake 1","1 scoop whey (30 g) in water, straight after your workout (mid-morning on rest days)",24,120],["Afternoon","Shake 2 (1 scoop in water) + a fruit",25,190],["Dinner","1½ cups stewed red beans or lentils with carrots & onion + ½ cup rice or provisions",28,620],["Cooking oil","About 1½ tbsp across the day",0,200]];
 /* month list: [section, item, month qty, EC$, protein g/month] */
@@ -501,7 +525,7 @@ var PT=130;
 /* ---------- state ---------- */
 var S;try{S=JSON.parse(document.getElementById("state").textContent||"{}")}catch(e){S={}}
 try{var L=JSON.parse(localStorage.getItem("fit30")||"null");if(L&&(L.updated||0)>(S.updated||0))S=L}catch(e){}
-["habits","logs","shop","meas","notes","prot"].forEach(function(k){S[k]=S[k]||{}});S.start=S.start||"2026-11-17";if(S.goal)PT=S.goal;if(S.kgoal)KG=S.kgoal;
+["habits","logs","shop","meas","notes","prot","cmeals","xmeals"].forEach(function(k){S[k]=S[k]||{}});S.mylib=S.mylib||[];S.start=S.start||"2026-11-17";if(S.goal)PT=S.goal;if(S.kgoal)KG=S.kgoal;
 var CSS=document.getElementById("app-style").textContent,JS=document.getElementById("app-script").textContent,HEAD='\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>30-Day Fit Plan</title>\n<meta name="theme-color" content="#07080a">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Fit Plan">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<link rel="icon" href="favicon.ico" sizes="any">\n<link rel="icon" href="icon.svg" type="image/svg+xml">\n<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">\n<link rel="apple-touch-icon" href="apple-touch-icon.png">\n<link rel="manifest" href="manifest.json">\n<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap">\n';
 var ART=null,timer=null,mode="device";
 var THEMES=["gradient","graffiti","light"],TNAME={gradient:"Gradient",graffiti:"Graffiti",light:"Light"};var theme="gradient";try{theme=localStorage.getItem("fit30theme")||"gradient"}catch(e){}if(THEMES.indexOf(theme)<0)theme="gradient";
@@ -583,7 +607,7 @@ return '<div class="grid g2"><div class="card"><div class="hd"><div><h2>Road to 
 '<div class="kpis"><div class="kpi"><small>Days done</small><b>'+dn+' / 30</b><span>'+(30-dn)+' to go</span></div><div class="kpi"><small>Strength sessions</small><b>'+strDone+' / '+str+'</b><span>Mon · Tue · Thu · Fri</span></div><div class="kpi"><small>Habits ticked</small><b>'+Math.round(tot/180*100)+'%</b><span>'+tot+' of 180</span></div><div class="kpi"><small>Waist change</small><b>'+wch+'</b><span>Day 1 vs latest</span></div></div></div></div>'+
 '<div class="card"><div class="hd"><div><h2>Day '+sel+' · '+DAYN[wd(sel)]+(S.start?' <span class="muted small">'+dateOf(sel)+'</span>':"")+'</h2><p class="sub">'+w.t+' · '+ph.t+'</p></div><span class="badge'+(w.k==="Strength"?" g":"")+'"><i></i>'+w.k+'</span></div>'+
 '<div class="row"><span>Exercises done</span><b>'+exDone(sel)+' / '+exTotal(sel)+'</b></div>'+bar(exDone(sel)/exTotal(sel))+
-'<div class="row"><span>Protein</span><b>'+p+' / '+PT+' g</b></div>'+bar(p/PT)+'<div class="row"><span>Meals eaten</span><b>'+dayMeals(sel).filter(function(m){return mealEaten(sel,m.k)}).length+' / 5</b></div>'+'<div class="row"><span>Calories</span><b>'+kcal(sel).toLocaleString()+' / '+KG.toLocaleString()+' kcal</b></div>'+kbar(kcal(sel))+
+'<div class="row"><span>Protein</span><b>'+p+' / '+PT+' g</b></div>'+bar(p/PT)+'<div class="row"><span>Meals eaten</span><b>'+dayMeals(sel).filter(function(m){return mealEaten(sel,m.k)}).length+' / '+dayMeals(sel).length+'</b></div>'+'<div class="row"><span>Calories</span><b>'+kcal(sel).toLocaleString()+' / '+KG.toLocaleString()+' kcal</b></div>'+kbar(kcal(sel))+
 '<div class="tiles"><div class="tile"><small>Habits</small><b>'+hc(sel)+' / 6</b><span>Tick them on Workout</span></div><div class="tile"><small>Calories left</small><b>'+Math.max(0,KG-kcal(sel)).toLocaleString()+'</b><span>'+Math.max(0,PT-p)+' g protein to go</span></div></div>'+
 '<button class="btn pri block" data-tab="workout">Open Day '+sel+' workout</button></div></div>'+
 '<div class="card" style="margin-top:16px"><div class="hd"><div><h2>Your 30 days</h2><p class="sub">Tap a day · the dot means the workout is done, the bar shows habits</p></div></div>'+dayChips()+'</div>'+
@@ -602,9 +626,13 @@ o+='<div class="grid g2e" style="margin-top:16px"><div class="card"><h2>When you
 return o}
 
 function mealCards(d){var ms=dayMeals(d),tk=0,tp=0,eat=0;ms.forEach(function(m){tk+=m.kcal;tp+=m.prot;if(mealEaten(d,m.k))eat++});
-var o='<div class="card"><div class="hd"><div><h2>Day '+d+' · '+DAYN[wd(d)]+(S.start?' '+dateOf(d):'')+' — what to eat</h2><p class="sub">Week '+(mw(d)+1)+' menu · '+W[wd(d)].t+' day · tick each meal when you eat it and it’s added to your calorie checker</p></div><span class="badge g"><i></i>'+eat+' / 5 eaten</span></div><div class="tiles" style="margin:0"><div class="tile"><small>Planned today</small><b>~'+tk.toLocaleString()+' kcal</b><span>'+tp+' g protein</span></div><div class="tile"><small>Eaten so far</small><b>'+kcal(d).toLocaleString()+' kcal</b><span>'+prot(d)+' g protein</span></div></div></div>';
-o+='<div class="exs meals" style="margin-top:16px">'+ms.map(function(m){var on=mealEaten(d,m.k);return '<div class="exc meal'+(on?" done":"")+'"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><span class="pill g">'+m.time+'</span><h3 style="margin-top:8px">'+m.name+': '+esc(m.title)+'</h3></div><label class="ck"><input type="checkbox" data-meal="'+m.k+'"'+(on?" checked":"")+'>Eaten</label></div>'+
-'<table class="mt"><tbody>'+m.rows.map(function(r){return '<tr><td>'+esc(r.t)+'</td><td class="r muted">'+r.kcal+' kcal</td><td class="r muted">'+(Math.round(r.prot*10)/10)+' g</td></tr>'}).join("")+'<tr class="tot"><td>Total</td><td class="r">'+m.kcal+' kcal</td><td class="r">'+m.prot+' g</td></tr></tbody></table><p class="cue">'+esc(m.tip)+'</p></div>'}).join("")+'</div>';return o}
+var o='<div class="card"><div class="hd"><div><h2>Day '+d+' · '+DAYN[wd(d)]+(S.start?' '+dateOf(d):'')+' — what to eat</h2><p class="sub">Week '+(mw(d)+1)+' menu · '+W[wd(d)].t+' day · tick each meal when you eat it and it’s added to your calorie checker. Ate something else? Swap it for your own, or add an extra meal.</p></div><span class="badge g"><i></i>'+eat+' / '+ms.length+' eaten</span></div><div class="tiles" style="margin:0"><div class="tile"><small>Planned today</small><b>~'+tk.toLocaleString()+' kcal</b><span>'+tp+' g protein</span></div><div class="tile"><small>Eaten so far</small><b>'+kcal(d).toLocaleString()+' kcal</b><span>'+prot(d)+' g protein</span></div></div></div>';
+o+='<div class="exs meals" style="margin-top:16px">'+ms.map(function(m){var on=mealEaten(d,m.k),cu=m.custom||m.extra;
+var acts=m.extra?'<button class="btn sm gh" data-cmedit="'+m.k+'">Edit</button><button class="btn sm gh danger" data-cmdel="'+m.k+'">Remove</button>':m.custom?'<button class="btn sm gh" data-cmedit="'+m.k+'">Edit</button><button class="btn sm gh" data-cmrevert="'+m.k+'">↩ Back to plan</button>':'<button class="btn sm gh" data-cmswap="'+m.k+'">⇄ Swap for my own</button>';
+return '<div class="exc meal'+(on?" done":"")+(cu?" cust":"")+'"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><span class="pill g">'+esc(m.time)+'</span>'+(m.extra?' <span class="ctag x">Extra</span>':m.custom?' <span class="ctag">Custom</span>':'')+'<h3 style="margin-top:8px">'+esc(m.name)+': '+esc(m.title)+'</h3>'+(m.custom?'<p class="small muted" style="margin:2px 0 0">Replaces: '+esc(m.orig)+'</p>':'')+'</div><label class="ck"><input type="checkbox" data-meal="'+m.k+'"'+(on?" checked":"")+'>Eaten</label></div>'+
+'<table class="mt"><tbody>'+(m.mode==="quick"?'<tr><td class="muted">Totals entered directly</td><td></td><td></td></tr>':'')+m.rows.map(function(r){return '<tr><td>'+esc(r.t)+'</td><td class="r muted">'+r.kcal+' kcal</td><td class="r muted">'+(Math.round(r.prot*10)/10)+' g</td></tr>'}).join("")+'<tr class="tot"><td>Total</td><td class="r">'+m.kcal+' kcal</td><td class="r">'+m.prot+' g</td></tr></tbody></table>'+(m.tip?'<p class="cue">'+esc(m.tip)+'</p>':'')+'<div class="macts">'+acts+'</div></div>'}).join("")+
+'<button class="addmeal" data-cmextra="1"><b>+</b>Add an extra meal or snack<span class="small muted" style="font-weight:500">Something that isn’t on the plan</span></button></div>';
+o+='<div class="card" style="margin-top:16px"><div class="hd" style="margin:0"><div><h2>My saved meals</h2><p class="sub">Meals you save show up here and in the swap screen, so next time it’s one tap.</p></div></div><div class="mlib">'+(S.mylib.length?S.mylib.map(function(c,i){var t=cmTot(c);return '<span class="mchip">'+esc(c.title)+' <em>'+t.kcal+' kcal · '+t.prot+' g</em><button data-libdel="'+i+'" title="Remove from My Meals" aria-label="Remove">✕</button></span>'}).join(""):'<span class="small muted">Nothing saved yet.</span>')+'</div></div>';return o}
 function food(){var p=prot(sel),ts=TEMPLATE.reduce(function(a,b){return a+b[2]},0),tk=TEMPLATE.reduce(function(a,b){return a+b[3]},0);
 var o=mealCards(sel)+'<h1 class="sec">Targets & calorie checker</h1><div class="grid g2"><div class="card"><div class="hd"><div><h2>Daily targets</h2><p class="sub">Male · 35 · 5′7″ · 165 lb · EC$350 a month for food</p></div><span class="badge g"><i></i>Fat loss</span></div><div class="ringrow">'+ring(p/PT,p+"g","of "+PT+" g today")+'<div class="kpis"><div class="kpi"><small>Calories</small><b>~1,900–2,000</b><span>kcal / day</span></div><div class="kpi"><small>Protein goal</small><b>'+PT+' g</b><span>'+(PT===90?"food only, no shakes":PT===110?"food + 1 shake a day":"food + 2 shakes a day")+'</span></div><div class="kpi"><small>Fat</small><b>~55 g</b><span>oil, peanut butter, chicken</span></div><div class="kpi"><small>Carbs</small><b>~260 g</b><span>beans, oats, rice, bread</span></div></div></div>'+
 '<div class="row" style="margin-top:18px"><span>Daily protein goal</span><div class="seg">'+[90,110,130].map(function(g){return '<button data-goal="'+g+'" class="'+(PT===g?"on":"")+'">'+g+' g</button>'}).join("")+'</div></div></div>'+
@@ -699,6 +727,40 @@ m.innerHTML='<div class="card"><div class="hd"><div><h2>Log food · Day '+sel+'<
 (list.length?'<h2 style="margin:18px 0 6px;font-size:14px">Logged today</h2><div class="list">'+list.map(function(x,i){var kc=x[2]!=null?x[2]:(PQ.filter(function(q){return q[0]===x[0]})[0]||[0,0,0])[2];return '<div class="ck" style="display:flex"><span>'+esc(x[0])+'</span><em>'+kc+' kcal · '+x[1]+' g <button class="btn sm" data-undo="'+i+'" style="margin-left:8px">Remove</button></em></div>'}).join("")+'</div>':"")+'</div>';
 document.body.appendChild(m)}
 function kbar(k){var over=k>KG*1.05;return '<div class="bar"><i style="width:'+Math.round(Math.min(1,k/KG)*100)+'%'+(over?';background:linear-gradient(90deg,#f59e0b,#f43f5e)':'')+'"></i></div>'+(over?'<p class="small" style="color:var(--amber);margin:4px 0 0">Over today’s calorie goal by '+(k-KG).toLocaleString()+' kcal</p>':'')}
+var CM={ctx:null,mode:"items"};
+function cmItemRow(i){var e=i&&i.t?estimate(i.t):null,man=i&&i.t&&!(e&&!e.none)?' data-man="1"':'';return '<div class="cmit"'+man+'><input type="text" class="cmT" placeholder="e.g. 1 cup rice" value="'+esc(i&&i.t||"")+'"><input type="text" inputmode="decimal" class="cmK" placeholder="kcal" value="'+(i&&i.t?Math.round(+i.kcal||0):"")+'"><input type="text" inputmode="decimal" class="cmP" placeholder="g" value="'+(i&&i.t?Math.round((+i.prot||0)*10)/10:"")+'"><button data-cmrow="1" title="Remove item" aria-label="Remove item">✕</button></div>'}
+function cmSheet(ctx){closeSheet();CM.ctx=ctx;var src=ctx.src,b=ctx.base,bt=b?{kcal:b.kcal,prot:b.prot}:null;CM.mode=src&&src.mode==="quick"?"quick":"items";
+var title=ctx.kind==="extra"?(src?"Edit extra meal":"Add an extra meal"):(src?"Edit custom "+b.name.toLowerCase():"Swap "+b.name.toLowerCase());
+var sub=ctx.kind==="extra"?"Adds on top of Day "+sel+"’s plan":"Replaces “"+(ctx.orig||b.title)+"” on Day "+sel+" only";
+var m=document.createElement("div");m.className="sheet";m.id="sheet";
+m.innerHTML='<div class="card cmf"><div class="hd" style="flex-wrap:nowrap;margin-bottom:4px"><div><h2>'+esc(title)+'</h2><p class="sub">'+esc(sub)+'</p></div><button class="btn sm gh" data-close>✕</button></div>'+
+(S.mylib.length&&!src?'<label class="l">Pick from My Meals</label><div class="cmpk">'+S.mylib.map(function(c,i){return '<button data-cmpick="'+i+'">'+esc(c.title)+' · '+cmTot(c).kcal+' kcal</button>'}).join("")+'</div>':'')+
+'<div class="cmseg"><button data-cmmode="items"'+(CM.mode==="items"?' class="on"':'')+'>List the items</button><button data-cmmode="quick"'+(CM.mode==="quick"?' class="on"':'')+'>Just the totals</button></div>'+
+'<div class="cm2"><div><label class="l">Meal name</label><input type="text" id="cmN" placeholder="e.g. Bake and saltfish" value="'+esc(src?src.title:"")+'"></div><div><label class="l">Time</label><input type="text" id="cmTm" placeholder="e.g. 12:30 pm" value="'+esc(src?src.time||"":(b?b.time:""))+'"></div></div>'+
+'<div id="cmIB"'+(CM.mode==="items"?'':' style="display:none"')+'><label class="l">What’s in it</label><div class="cmih"><span>Amount + food</span><span>kcal</span><span>Protein</span><span></span></div><div class="cmits" id="cmIts">'+(src&&src.mode!=="quick"&&src.items&&src.items.length?src.items:[{},{}]).map(cmItemRow).join("")+'</div><button class="btn sm" data-cmaddrow="1" style="margin-top:8px">+ Add item</button><p class="small muted" style="margin:8px 0 0">Type like “1 cup rice”, “2 eggs”, “100 g saltfish” or “1 bake”. Calories and protein fill in automatically. If a food isn’t known, the box turns amber and you type the numbers yourself.</p></div>'+
+'<div id="cmQB"'+(CM.mode==="quick"?'':' style="display:none"')+'><div class="cm2"><div><label class="l">Calories (kcal)</label><input type="text" inputmode="decimal" id="cmQK" placeholder="e.g. 650" value="'+(src&&src.mode==="quick"?src.kcal:"")+'"></div><div><label class="l">Protein (g)</label><input type="text" inputmode="decimal" id="cmQP" placeholder="e.g. 30" value="'+(src&&src.mode==="quick"?src.prot:"")+'"></div></div><p class="small muted" style="margin:8px 0 0">Good for eating out when you don’t know the breakdown. Use the label or your best guess.</p></div>'+
+'<div class="est"><div><b id="cmEK">0 kcal</b><span id="cmEP">0 g protein</span></div><span id="cmCmp" class="small muted" style="text-align:right"></span></div>'+
+'<div style="display:grid;gap:10px;margin-top:12px"><label class="ck"><input type="checkbox" id="cmSave"'+(src?'':' checked')+'>Save to My Meals so I can reuse it</label><label class="ck"><input type="checkbox" id="cmEat"'+((src?mealEaten(sel,ctx.k):true)?' checked':'')+'>Mark as eaten</label></div>'+
+'<p class="small" id="cmMsg" style="color:var(--amber);margin:8px 0 0"></p><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><button class="btn" data-close>Cancel</button><button class="btn pri" data-cmsave="1">Save meal</button></div></div>';
+document.body.appendChild(m);CM.bt=bt;cmCalc()}
+function cmRead(){var o={title:(document.getElementById("cmN").value||"").trim()||"My meal",time:(document.getElementById("cmTm").value||"").trim(),mode:CM.mode};
+if(CM.mode==="quick"){o.kcal=Math.round(parseFloat(document.getElementById("cmQK").value)||0);o.prot=Math.round(parseFloat(document.getElementById("cmQP").value)||0)}
+else o.items=[].map.call(document.querySelectorAll("#cmIts .cmit"),function(r){return{t:r.querySelector(".cmT").value.trim(),kcal:Math.round(parseFloat(r.querySelector(".cmK").value)||0),prot:Math.round((parseFloat(r.querySelector(".cmP").value)||0)*10)/10}}).filter(function(i){return i.t});return o}
+function cmCalc(){var t=cmTot(cmRead()),e1=document.getElementById("cmEK");if(!e1)return;e1.textContent=t.kcal.toLocaleString()+" kcal";document.getElementById("cmEP").textContent=t.prot+" g protein";
+var c=document.getElementById("cmCmp");if(CM.bt&&CM.ctx.kind==="swap"){var dk=t.kcal-CM.bt.kcal,dp=t.prot-CM.bt.prot;c.innerHTML=(dk>=0?"+":"")+dk+" kcal · "+(dp>=0?"+":"")+dp+" g<br>vs the planned meal"}else c.textContent=""}
+function cmRowInput(r,which){var T=r.querySelector(".cmT"),K=r.querySelector(".cmK"),P=r.querySelector(".cmP");
+if(which==="t"){var e=T.value.trim()?estimate(T.value):null;if(e&&!e.none){K.value=e.kcal;P.value=e.prot;T.classList.remove("unk");r.removeAttribute("data-man")}else{T.classList.toggle("unk",!!T.value.trim());if(!r.hasAttribute("data-man")){K.value="";P.value=""}}}
+else{r.setAttribute("data-man","1");T.classList.remove("unk")}cmCalc()}
+function cmSetEaten(d,k,on){var L=S.prot[d]=S.prot[d]||[],key="m:"+k;S.prot[d]=L.filter(function(e){return e[3]!==key});if(on){var mm=dayMeals(d).filter(function(x){return x.k===k})[0];if(mm)S.prot[d].push([mm.name+": "+mm.title,mm.prot,mm.kcal,key])}if(prot(d)>=PT){var h=S.habits[d]||[];h[1]=true;S.habits[d]=h}}
+function cmSave(){var o=cmRead(),ctx=CM.ctx,d=sel,msg=document.getElementById("cmMsg");
+if(CM.mode==="items"&&!o.items.length){msg.textContent="Add at least one item, or switch to “Just the totals”.";return}
+if(CM.mode==="quick"&&!o.kcal&&!o.prot){msg.textContent="Enter the calories or the protein.";return}
+var eat=document.getElementById("cmEat").checked,k;
+if(ctx.kind==="swap"){k=ctx.k;(S.cmeals[d]=S.cmeals[d]||{})[k]=o}
+else{var L=S.xmeals[d]=S.xmeals[d]||[];if(ctx.src){k=ctx.k;o.k=k;for(var i=0;i<L.length;i++)if(L[i].k===k)L[i]=o}else{k="X"+Date.now().toString(36);o.k=k;L.push(o)}}
+cmSetEaten(d,k,eat);
+if(document.getElementById("cmSave").checked){var lt=o.title.toLowerCase(),c=JSON.parse(JSON.stringify(o));delete c.k;delete c.time;var ix=-1;S.mylib.forEach(function(x,j){if(x.title.toLowerCase()===lt)ix=j});if(ix>=0)S.mylib[ix]=c;else S.mylib.push(c)}
+closeSheet();save();keep(render)}
 function closeSheet(){var s=document.getElementById("sheet");if(s)s.remove()}
 
 function render(){var b=tab==="workout"?workout():tab==="food"?food():tab==="shop"?shopV():tab==="progress"?progress():home();
@@ -710,6 +772,17 @@ function keep(fn){var y=scrollY;fn();scrollTo(0,y)}
 document.addEventListener("click",function(e){var t=e.target.closest("button,[data-close]");if(!t)return;var ds=t.dataset;
 if(t.classList.contains("sheet")||ds.close!==undefined){closeSheet();return}
 if(ds.tab){setTab(ds.tab);return}
+if(ds.cmswap){var pb=planMeals(sel).filter(function(x){return x.k===ds.cmswap})[0];cmSheet({kind:"swap",k:ds.cmswap,base:pb});return}
+if(ds.cmedit){var dm=dayMeals(sel).filter(function(x){return x.k===ds.cmedit})[0];if(dm&&dm.extra)cmSheet({kind:"extra",k:ds.cmedit,src:(S.xmeals[sel]||[]).filter(function(x){return x.k===ds.cmedit})[0]});else{var pb2=planMeals(sel).filter(function(x){return x.k===ds.cmedit})[0];cmSheet({kind:"swap",k:ds.cmedit,base:pb2,src:(S.cmeals[sel]||{})[ds.cmedit]})}return}
+if(ds.cmrevert){var was=mealEaten(sel,ds.cmrevert);if(S.cmeals[sel])delete S.cmeals[sel][ds.cmrevert];cmSetEaten(sel,ds.cmrevert,was);save();keep(render);return}
+if(ds.cmdel){cmSetEaten(sel,ds.cmdel,false);S.xmeals[sel]=(S.xmeals[sel]||[]).filter(function(x){return x.k!==ds.cmdel});save();keep(render);return}
+if(ds.cmextra){cmSheet({kind:"extra"});return}
+if(ds.libdel!=null){S.mylib.splice(+ds.libdel,1);save();keep(render);return}
+if(ds.cmmode){CM.mode=ds.cmmode;[].forEach.call(document.querySelectorAll("[data-cmmode]"),function(x){x.classList.toggle("on",x.dataset.cmmode===CM.mode)});document.getElementById("cmIB").style.display=CM.mode==="items"?"":"none";document.getElementById("cmQB").style.display=CM.mode==="quick"?"":"none";cmCalc();return}
+if(ds.cmaddrow){var box=document.getElementById("cmIts");box.insertAdjacentHTML("beforeend",cmItemRow({}));var ts=box.querySelectorAll(".cmT");ts[ts.length-1].focus();return}
+if(ds.cmrow){t.closest(".cmit").remove();cmCalc();return}
+if(ds.cmpick!=null){var pk=S.mylib[+ds.cmpick];document.getElementById("cmN").value=pk.title;var mb=document.querySelector('[data-cmmode="'+(pk.mode==="quick"?"quick":"items")+'"]');mb.click();if(pk.mode==="quick"){document.getElementById("cmQK").value=pk.kcal;document.getElementById("cmQP").value=pk.prot}else document.getElementById("cmIts").innerHTML=(pk.items||[]).map(cmItemRow).join("");document.getElementById("cmSave").checked=false;cmCalc();return}
+if(ds.cmsave){cmSave();return}
 if(ds.step){keep(function(){go(sel+(+ds.step))});return}
 if(ds.go){go(+ds.go);setTab("workout");return}
 if(ds.mw){keep(function(){mweek=+ds.mw;render()});return}
@@ -736,7 +809,7 @@ if(ds.undo){S.prot[sel].splice(+ds.undo,1);save();keep(render);closeSheet();shee
 if(t.id==="fab"||t.id==="fab2"||t.id==="fab3"){sheet();return}
 if(ds.themeSet){theme=ds.themeSet;document.documentElement.setAttribute("data-theme",theme);try{localStorage.setItem("fit30theme",theme)}catch(x){}keep(render);return}
 if(t.id==="reset"){var m=document.createElement("div");m.className="sheet";m.id="sheet";m.innerHTML='<div class="card"><h2>Reset all tracking?</h2><p class="sub" style="margin:8px 0 16px">Clears every tick, log, protein entry, note and measurement. This can’t be undone.</p><div style="display:flex;gap:8px"><button class="btn danger" id="yes">Reset everything</button><button class="btn" data-close>Cancel</button></div></div>';document.body.appendChild(m);return}
-if(t.id==="yes"){S={habits:{},logs:{},shop:{},meas:{},notes:{},prot:{},start:S.start};closeSheet();save();render();return}});
+if(t.id==="yes"){S={habits:{},logs:{},shop:{},meas:{},notes:{},prot:{},cmeals:{},xmeals:{},mylib:S.mylib||[],start:S.start};closeSheet();save();render();return}});
 document.addEventListener("click",function(e){if(e.target.classList&&e.target.classList.contains("sheet"))closeSheet()});
 document.addEventListener("change",function(e){var t=e.target,d=sel,ds=t.dataset;
 if(t.id==="daysel"){go(+t.value);return}
@@ -750,6 +823,7 @@ else if(t.id==="note"){S.notes[d]=t.value;save();return}
 else if(t.id==="start"){S.start=t.value;if(S.start){var x=dayFromDate();if(x>=1&&x<=30)sel=x}}
 else return;
 save();keep(render)});
+document.addEventListener("input",function(e){var t=e.target;if(!t.classList)return;var cr=t.closest&&t.closest(".cmit");if(cr){cmRowInput(cr,t.classList.contains("cmT")?"t":"n");return}if(t.id==="cmQK"||t.id==="cmQP"){cmCalc();return}})
 document.addEventListener("input",function(e){var t=e.target;if(t.classList&&t.classList.contains("fq")){var box=t.closest(".smart");box._online=null;box._res=null;box._msg="";box.dataset.force="";renderPrev(box)}});
 document.addEventListener("keydown",function(e){var t=e.target;if(e.key==="Enter"&&t.classList&&t.classList.contains("fq")){e.preventDefault();addEst(t.closest(".smart"))}});
 document.addEventListener("error",function(e){var t=e.target;if(t&&t.tagName==="IMG"){var a=t.closest(".art");if(a)a.classList.add("bad")}},true);
